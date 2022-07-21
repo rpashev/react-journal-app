@@ -19,7 +19,7 @@ const Login = () => {
     if (inputs.email && inputs.password) {
       axios
         .post(`${process.env.REACT_APP_BASE_URL}auth/login`, { ...inputs })
-        .then((res) => console.log(res));
+        .then((res) => console.log(res.data.token));
     }
   };
 
