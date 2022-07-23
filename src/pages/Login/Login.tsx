@@ -1,11 +1,12 @@
 import { Button, Grid, TextField, Typography } from "@mui/material";
 import { Container } from "@mui/system";
 import { useMutation } from "@tanstack/react-query";
-import axios, { AxiosError, AxiosResponse } from "axios";
-import { useState } from "react";
+import { AxiosError } from "axios";
+import { ReactNode, useContext, useState } from "react";
+import AuthContext from "../../context/user-context";
 import api from "../../services/api";
 
-interface InputState {
+export interface InputState {
   email: string;
   password: string;
 }
@@ -16,10 +17,28 @@ const Login = () => {
     password: "",
   });
 
+  const context = useContext(AuthContext);
+
+  const { isError, error, isLoading, mutate } = useMutation<
+    any,
+    AxiosError,
+    InputState
+  >(api.login, {
+    onSuccess: (res) => {
+      context.login(res.data.token, res.data.userId);
+    },
+  });
+
+  let errorContent: any;
+  if (isError && error) {
+    let err: any = error.response?.data;
+    errorContent = <p>{err?.message || "Could not login!"}</p>;
+  }
+
   const submitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     if (inputs.email && inputs.password) {
+      mutate(inputs);
       console.log(inputs);
     }
   };
@@ -79,6 +98,8 @@ const Login = () => {
             >
               Login
             </Button>
+            {isLoading && <p>Loading...</p>}
+            {isError && errorContent}
           </Grid>
         </Grid>
       </form>

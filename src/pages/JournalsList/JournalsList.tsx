@@ -1,8 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+import { useContext } from "react";
+import AuthContext from "../../context/user-context";
 import api from "../../services/api";
 
 const JournalsList = () => {
+  const context = useContext(AuthContext);
+  console.log(context);
+
   const { data, error, isError, isLoading } = useQuery<any, AxiosError>(
     ["journals"],
     api.getJournals
