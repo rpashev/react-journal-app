@@ -1,21 +1,21 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import api from "../../services/api";
 
 const JournalsList = () => {
-  const [journals, setJournals] = useState<any>([]);
+  const { data, error, isError, isLoading } = useQuery<any, AxiosError>(
+    ["journals"],
+    api.getJournals
+  );
 
-  useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}journals`, {
-        headers: {
-          Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmIyZjMzMDYxNmNkZGRiNzFlNjJmYWQiLCJlbWFpbCI6InRlc3RAbWFpbC5jb20iLCJmaXJzdE5hbWUiOiJKb2hueSIsImlhdCI6MTY1ODQxMDE0M30.ciJ4Zw3pwOea88MsU2VWOELtqd6x4iJByRhfW8s6rEk",
-        },
-      })
-      .then((data) => setJournals(data.data));
-  }, []);
+  if (isLoading) return <p>Loading...</p>;
+  if (isError) {
+    let err: any = error?.response?.data;
 
-  useEffect(() => console.log(journals), [journals]);
+    return <p>{err.message || "Could not load journals"}</p>;
+  }
+
+  const journals = data.data;
 
   if (journals.length === 0) return <p>No journals</p>;
 
