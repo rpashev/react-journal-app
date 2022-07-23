@@ -1,5 +1,7 @@
+import { useContext } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
+import AuthContext from "./context/user-context";
 import CreateEntry from "./pages/CreateEntry/CreateEntry";
 import CreateJournal from "./pages/CreateJournal/CreateJournal";
 import EditEntry from "./pages/EditEntry/EditEntry";
@@ -10,7 +12,9 @@ import SingleEntry from "./pages/SingleEntry/SingleEntry";
 import SingleJournal from "./pages/SingleJournal/SingleJournal";
 
 function App() {
-  const isLoggedIn = true;
+  const context = useContext(AuthContext);
+  const { isLoggedIn } = context;
+  console.log(isLoggedIn);
 
   return (
     <BrowserRouter>

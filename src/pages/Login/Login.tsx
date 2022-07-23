@@ -1,7 +1,9 @@
 import { Button, Grid, TextField, Typography } from "@mui/material";
 import { Container } from "@mui/system";
-import axios from "axios";
+import { useMutation } from "@tanstack/react-query";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { useState } from "react";
+import api from "../../services/api";
 
 interface InputState {
   email: string;
@@ -14,12 +16,11 @@ const Login = () => {
     password: "",
   });
 
-  const submitHandler = (event: React.FormEvent<HTMLFormElement>): void => {
+  const submitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
     if (inputs.email && inputs.password) {
-      axios
-        .post(`${process.env.REACT_APP_BASE_URL}auth/login`, { ...inputs })
-        .then((res) => console.log(res.data.token));
+      console.log(inputs);
     }
   };
 
