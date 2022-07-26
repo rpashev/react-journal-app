@@ -16,7 +16,11 @@ const AuthContext = createContext<UserContext>({
   logout: (): void => {},
 });
 
-export const AuthContextProvider = (props: any) => {
+type Props = {
+  children: React.ReactNode;
+};
+
+export const AuthContextProvider = (props: Props) => {
   const initialToken = localStorage.getItem("token");
   const initialUserId = localStorage.getItem("userId");
 

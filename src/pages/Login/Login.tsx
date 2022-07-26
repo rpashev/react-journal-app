@@ -2,7 +2,7 @@ import { Button, Grid, TextField, Typography } from "@mui/material";
 import { Container } from "@mui/system";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { ReactNode, useContext, useState } from "react";
+import { useContext, useState } from "react";
 import AuthContext from "../../context/user-context";
 import api from "../../services/api";
 
@@ -81,6 +81,7 @@ const Login = () => {
             <TextField
               onChange={changeHandler}
               fullWidth
+              type="password"
               label="Password"
               variant="outlined"
               color="secondary"
