@@ -1,4 +1,11 @@
-import { Button, Grid, TextField, Typography } from "@mui/material";
+import {
+  Button,
+  Grid,
+  TextField,
+  Typography,
+  CircularProgress,
+  Alert,
+} from "@mui/material";
 import { Container } from "@mui/system";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
@@ -89,19 +96,34 @@ const Login = () => {
               required
             />
           </Grid>
-          <Grid item xs={12} md={5}>
-            <Button
-              fullWidth
-              type="submit"
-              variant="contained"
-              color="secondary"
-              disabled={!inputs.email || !inputs.password}
-            >
-              Login
-            </Button>
-            {isLoading && <p>Loading...</p>}
-            {isError && errorContent}
-          </Grid>
+          {!isLoading && (
+            <Grid item xs={12} md={5}>
+              <Button
+                fullWidth
+                type="submit"
+                variant="contained"
+                color="secondary"
+                disabled={!inputs.email || !inputs.password}
+              >
+                Login
+              </Button>
+            </Grid>
+          )}
+
+          {isLoading && (
+            <Grid item xs={12}>
+              <CircularProgress
+                color="secondary"
+                size="4rem"
+                sx={{ margin: "0 auto", display: "block" }}
+              />
+            </Grid>
+          )}
+          {isError && (
+            <Grid item xs={12}>
+              <Alert severity="error">{errorContent}</Alert>
+            </Grid>
+          )}
         </Grid>
       </form>
     </Container>
