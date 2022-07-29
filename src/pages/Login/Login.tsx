@@ -10,6 +10,7 @@ import { Container } from "@mui/system";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useContext, useState } from "react";
+import Spinner from "../../components/UI/Spinner";
 import AuthContext from "../../context/user-context";
 import api from "../../services/api";
 
@@ -112,11 +113,7 @@ const Login = () => {
 
           {isLoading && (
             <Grid item xs={12}>
-              <CircularProgress
-                color="secondary"
-                size="4rem"
-                sx={{ margin: "0 auto", display: "block" }}
-              />
+              <Spinner />
             </Grid>
           )}
           {isError && (

@@ -13,7 +13,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import AuthContext from "../../context/user-context";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface Props {
   /**
@@ -58,6 +58,11 @@ export default function Navigation(props: Props) {
   };
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const returnActiveLink = (path: string) => {
+    return location.pathname === path ? "rgba(243, 229, 245, 0.3)" : "none";
+  };
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
@@ -69,7 +74,11 @@ export default function Navigation(props: Props) {
         {navLinks.map((item) => (
           <ListItem key={item.title} disablePadding>
             <ListItemButton
-              sx={{ textAlign: "center" }}
+              sx={[
+                {
+                  textAlign: "center",
+                },
+              ]}
               onClick={() => navigate(item.path)}
             >
               <ListItemText primary={item.title} />
@@ -107,7 +116,17 @@ export default function Navigation(props: Props) {
             {navLinks.map((item) => (
               <Button
                 key={item.title}
-                sx={{ color: "#fff" }}
+                sx={[
+                  {
+                    color: "#fff",
+                    backgroundColor: returnActiveLink(item.path),
+                  },
+                  {
+                    "&:hover": {
+                      backgroundColor: "rgba(243, 229, 245, 0.3)",
+                    },
+                  },
+                ]}
                 onClick={() => navigate(item.path)}
               >
                 {item.title}
