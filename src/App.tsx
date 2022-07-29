@@ -1,12 +1,14 @@
 import { useContext } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
+import Navigation from "./components/Layout/Navigation";
 import AuthContext from "./context/user-context";
 import CreateEntry from "./pages/CreateEntry/CreateEntry";
 import CreateJournal from "./pages/CreateJournal/CreateJournal";
 import EditEntry from "./pages/EditEntry/EditEntry";
 import JournalsList from "./pages/JournalsList/JournalsList";
 import Login from "./pages/Login/Login";
+import Logout from "./pages/Logout/Logout";
 import Register from "./pages/Register/Register";
 import SingleEntry from "./pages/SingleEntry/SingleEntry";
 import SingleJournal from "./pages/SingleJournal/SingleJournal";
@@ -18,8 +20,13 @@ function App() {
 
   return (
     <BrowserRouter>
+      <Navigation />
       <Routes>
         <Route path="/" element={isLoggedIn ? <JournalsList /> : <Login />} />
+        <Route
+          path="/logout"
+          element={isLoggedIn ? <Logout /> : <Navigate to="/" />}
+        />
         <Route
           path="/register"
           element={!isLoggedIn ? <Register /> : <Navigate to="/" />}
