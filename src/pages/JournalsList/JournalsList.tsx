@@ -1,41 +1,57 @@
+import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
+import { Box, Container, Typography, Alert } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { useContext } from "react";
-import AuthContext from "../../context/user-context";
+import JournalCard from "../../components/Journal/JournalCard";
+import Spinner from "../../components/UI/Spinner";
 import api from "../../services/api";
 
-const JournalsList = () => {
-  const context = useContext(AuthContext);
-  console.log(context);
+export interface BasicJournal {
+  entriesAmount: number;
+  id: string;
+  journalName: string;
+}
 
+const JournalsList = () => {
   const { data, error, isError, isLoading } = useQuery<any, AxiosError>(
     ["journals"],
     api.getJournals
   );
 
-  if (isLoading) return <p>Loading...</p>;
+  let content: ReactJSXElement = <Spinner />;
   if (isError) {
     let err: any = error?.response?.data;
 
-    return <p>{err.message || "Could not load journals"}</p>;
+    content = (
+      <Alert severity="error">{err.message || "Could not load journals"}</Alert>
+    );
   }
 
-  const journals = data.data;
+  const journals = data?.data || [];
 
-  if (journals.length === 0) return <p>No journals</p>;
+  if (journals.length === 0 && !isLoading) content = <p>No journals</p>;
+
+  if (journals.length > 0) {
+    content = journals.map((journal: BasicJournal) => {
+      // console.log(journal);
+      return <JournalCard journal={journal} key={journal.id} />;
+    });
+  }
 
   return (
-    <div>
-      {journals.map((journal: any) => {
-        return (
-          <>
-            <p>{journal.journalName}</p>
-            <p>{journal.id}</p>
-            <p>{journal.entriesAmount}</p>
-          </>
-        );
-      })}
-    </div>
+    <Container>
+      <Typography
+        variant="h4"
+        component="h2"
+        color="secondary"
+        sx={{ textAlign: "center", marginTop: 5, marginBottom: 5 }}
+      >
+        Your Journals
+      </Typography>
+      <Box sx={{ display: "flex", justifyContent: "center", gap: "2rem" }}>
+        {content}
+      </Box>
+    </Container>
   );
 };
 

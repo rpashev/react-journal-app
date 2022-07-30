@@ -40,7 +40,7 @@ const Login = () => {
   let errorContent: any;
   if (isError && error) {
     let err: any = error.response?.data;
-    errorContent = <p>{err?.message || "Could not login!"}</p>;
+    errorContent = err?.message || "Could not login!";
   }
 
   const submitHandler = async (event: React.FormEvent<HTMLFormElement>) => {

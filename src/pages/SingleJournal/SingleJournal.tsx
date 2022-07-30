@@ -1,5 +1,8 @@
+import { useParams } from "react-router-dom";
+
 const SingleJournal = () => {
-  return <div>SingleJournal</div>;
+  const { journalId } = useParams();
+  return <div>{journalId}</div>;
 };
 
 export default SingleJournal;
