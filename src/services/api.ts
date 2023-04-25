@@ -17,7 +17,7 @@ export default {
     });
   },
 
-  getJournal(id: string) {
+  getJournal(id: string | undefined) {
     return axiosAuth.get(`/${id}`);
   },
 
