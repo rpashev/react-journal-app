@@ -1,9 +1,10 @@
 import axios, { AxiosResponse } from "axios";
-import { InputState } from "../pages/Login/Login";
+import { LoginInputState } from "../pages/Login/Login";
 import axiosAuth from "./axios";
+import { EntryInputState } from "../components/Entry/EntryFormDialog";
 
 export default {
-  login(inputs: InputState) {
+  login(inputs: LoginInputState) {
     return axios.post(`${process.env.REACT_APP_BASE_URL}auth/login`, {
       email: inputs.email,
       password: inputs.password,
@@ -34,9 +35,13 @@ export default {
     return axiosAuth.get(`${process.env.REACT_APP_BASE_URL}journals`);
   },
 
-  createEntry(title: string, body: string, date: string, id: string) {
-    const data = { title, body, date };
-    return axiosAuth.post(`/${id}/create-entry`, data);
+  createEntry(data: EntryInputState) {
+    const payload = {
+      title: data.title,
+      body: data.body,
+      date: data.date,
+    };
+    return axiosAuth.post(`/${data.id}/create-entry`, payload);
   },
 
   getEntry(journalID: string, entryID: string) {

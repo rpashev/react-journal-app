@@ -14,6 +14,7 @@ import { Edit, Delete, Visibility } from "@material-ui/icons";
 import { grey } from "@mui/material/colors";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { filterByDate } from "../../utils/validations";
+import { entryContent } from "../../utils/formatters";
 
 export interface Entry {
   body: string;
@@ -82,18 +83,6 @@ const JournalEntriesTable = ({ entries, searchFilter, timeFilter }: Props) => {
 
   const onRowClick = (event: any, id: string) => {
     console.log(id);
-  };
-
-  const entryContent = (body: string) => {
-    if (body) {
-      let cleanBody = body
-        .replace(/<\/?[^>]+(>|$)/g, "")
-        .replace(/&nbsp;/g, " ");
-      if (cleanBody.length > 40) {
-        cleanBody = cleanBody.slice(0, 40) + "...";
-      }
-      return cleanBody;
-    }
   };
 
   return (

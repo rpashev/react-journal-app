@@ -8,7 +8,8 @@ import AddIcon from "@material-ui/icons/Add";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import JournalEntriesTable from "../../components/Journal/JournalEntriesTable";
 import JournalEntriesFilter from "../../components/Journal/JournalEntriesFilter";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
+import EntryFormDialog from "../../components/Entry/EntryFormDialog";
 
 type MouseEvent = React.MouseEvent<HTMLButtonElement, globalThis.MouseEvent>;
 
@@ -21,6 +22,7 @@ const SingleJournal = () => {
 
   const [searchFilter, setSearchFilter] = useState("");
   const [timeFilter, setTimeFilter] = useState("All Time");
+  const [openDialog, setOpenDialog] = useState(false);
 
   if (isLoading) {
     return <Spinner />;
@@ -35,56 +37,71 @@ const SingleJournal = () => {
   const journal = data?.data || [];
   console.log(journal);
 
+  const onAddNewEntry = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "start",
-        maxWidth: 950,
-        margin: "3rem auto",
-        gap: "0.5rem",
-      }}
-    >
+    <Fragment>
       <Box
         sx={{
-          width: "100%",
           display: "flex",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
+          flexDirection: "column",
+          alignItems: "start",
+          maxWidth: 950,
+          margin: "3rem auto",
+          gap: "0.5rem",
         }}
       >
-        <Box sx={{ display: "flex", gap: "1rem" }}>
-          <Button
-            variant="contained"
-            color="error"
-            startIcon={<AddIcon />}
-            onClick={(e: MouseEvent) => console.log("open dialog")}
-          >
-            NEW ENTRY
-          </Button>
-          <Button
-            variant="contained"
-            color="info"
-            startIcon={<ArrowBackIcon />}
-            onClick={(e: MouseEvent) => console.log("back")}
-          >
-            BACK
-          </Button>
+        <Box
+          sx={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+          }}
+        >
+          <Box sx={{ display: "flex", gap: "1rem" }}>
+            <Button
+              variant="contained"
+              color="error"
+              startIcon={<AddIcon />}
+              onClick={onAddNewEntry}
+            >
+              NEW ENTRY
+            </Button>
+            <Button
+              variant="contained"
+              color="info"
+              startIcon={<ArrowBackIcon />}
+              onClick={(e: MouseEvent) => console.log("back")}
+            >
+              BACK
+            </Button>
+          </Box>
+          <JournalEntriesFilter
+            setSearchFilter={setSearchFilter}
+            searchFilter={searchFilter}
+            timeFilter={timeFilter}
+            setTimeFilter={setTimeFilter}
+          />
         </Box>
-        <JournalEntriesFilter
-          setSearchFilter={setSearchFilter}
+        <JournalEntriesTable
+          entries={journal.entries}
           searchFilter={searchFilter}
           timeFilter={timeFilter}
-          setTimeFilter={setTimeFilter}
         />
       </Box>
-      <JournalEntriesTable
-        entries={journal.entries}
-        searchFilter={searchFilter}
-        timeFilter={timeFilter}
+      <EntryFormDialog
+        open={openDialog}
+        handleClose={handleCloseDialog}
+        journalId={journalId!}
       />
-    </Box>
+    </Fragment>
   );
 };
 

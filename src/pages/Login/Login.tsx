@@ -14,13 +14,13 @@ import Spinner from "../../components/UI/Spinner";
 import AuthContext from "../../context/user-context";
 import api from "../../services/api";
 
-export interface InputState {
+export interface LoginInputState {
   email: string;
   password: string;
 }
 
 const Login = () => {
-  const [inputs, setInputs] = useState<InputState>({
+  const [inputs, setInputs] = useState<LoginInputState>({
     email: "",
     password: "",
   });
@@ -30,7 +30,7 @@ const Login = () => {
   const { isError, error, isLoading, mutate } = useMutation<
     any,
     AxiosError,
-    InputState
+    LoginInputState
   >(api.login, {
     onSuccess: (res) => {
       context.login(res.data.token, res.data.userId);
