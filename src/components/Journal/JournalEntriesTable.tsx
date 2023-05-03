@@ -45,6 +45,10 @@ const JournalEntriesTable = ({ entries, searchFilter, timeFilter }: Props) => {
   const [filteredRows, setFilteredRows] = useState(entries);
 
   useEffect(() => {
+    console.log(entries);
+  }, [entries]);
+
+  useEffect(() => {
     console.log(searchFilter);
 
     setFilteredRows(
@@ -61,14 +65,14 @@ const JournalEntriesTable = ({ entries, searchFilter, timeFilter }: Props) => {
         }
       })
     );
-  }, [searchFilter, timeFilter]);
+  }, [searchFilter, timeFilter, entries]);
 
   const visibleRows = useMemo(() => {
     return filteredRows.slice(
       page * rowsPerPage,
       page * rowsPerPage + rowsPerPage
     );
-  }, [filteredRows, rowsPerPage, page]);
+  }, [filteredRows, rowsPerPage, page, entries]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);

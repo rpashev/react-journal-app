@@ -33,9 +33,13 @@ const SingleJournal = () => {
       <Alert severity="error">{err.message || "Could not load journal"}</Alert>
     );
   }
+  // useEffect(() => {
+  //   console.log(datae );
+  // }, [data]);
 
-  const journal = data?.data || [];
-  console.log(journal);
+  // let journal = data?.data || [];
+
+  // console.log(journal);
 
   const onAddNewEntry = () => {
     setOpenDialog(true);
@@ -91,7 +95,7 @@ const SingleJournal = () => {
           />
         </Box>
         <JournalEntriesTable
-          entries={journal.entries}
+          entries={data?.data?.entries}
           searchFilter={searchFilter}
           timeFilter={timeFilter}
         />

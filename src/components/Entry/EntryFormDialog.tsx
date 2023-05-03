@@ -7,13 +7,15 @@ import {
   DialogActions,
   Button,
   Box,
+  IconButton,
 } from "@mui/material";
+import Close from "@material-ui/icons/Close";
 import { useEffect, useRef, useState } from "react";
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { formats, toolbarOptions } from "../../utils/quill";
 import { entryContent } from "../../utils/formatters";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import api from "../../services/api";
 
@@ -37,13 +39,20 @@ const EntryFormDialog = ({ open, handleClose, journalId }: Props) => {
   const AlignStyle = Quill.import("attributors/style/align");
   Quill.register(AlignStyle, true);
 
+  const queryClient = useQueryClient();
+
   const { isError, error, isLoading, mutate } = useMutation<
     any,
     AxiosError,
     EntryInputState
   >(api.createEntry, {
     onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["single-journal", journalId],
+      });
       handleClose();
+      setBody("");
+      setTitle("");
     },
   });
 
@@ -64,6 +73,18 @@ const EntryFormDialog = ({ open, handleClose, journalId }: Props) => {
         justifyContent: "center",
       }}
     >
+      <IconButton
+        aria-label="close"
+        onClick={handleClose}
+        sx={{
+          position: "absolute",
+          right: 8,
+          top: 8,
+          color: (theme) => theme.palette.grey[500],
+        }}
+      >
+        <Close />
+      </IconButton>
       <DialogTitle>Create a New Entry</DialogTitle>
       <DialogContent>
         <Box sx={{ width: "100%", height: "500px", marginTop: "0.75rem" }}>
@@ -91,13 +112,13 @@ const EntryFormDialog = ({ open, handleClose, journalId }: Props) => {
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
         <Button
-          disabled={!body || !title || !entryContent(body)}
+          disabled={!body || !title || !entryContent(body) || isLoading}
           color="secondary"
           variant="contained"
           onClick={handleSubmit}
           type="submit"
         >
-          Submit
+          {isLoading ? "Saving..." : "Submit"}
         </Button>
       </DialogActions>
     </Dialog>
