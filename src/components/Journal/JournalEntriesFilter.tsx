@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import Search from "@material-ui/icons/Search";
 import { useState } from "react";
+import React from "react";
 
 interface Props {
   setSearchFilter: React.Dispatch<React.SetStateAction<string>>;
@@ -34,7 +35,10 @@ const JournalEntriesFilter = ({
   ];
 
   return (
-    <Box sx={{ display: "flex", gap: "0.5rem" }}>
+    <Box
+      sx={{ display: "flex", gap: "0.5rem" }}
+      className="JournalEntriesFilter"
+    >
       <Select
         value={timeFilter}
         onChange={(e) => setTimeFilter(e.target.value)}

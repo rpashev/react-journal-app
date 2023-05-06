@@ -5,6 +5,7 @@ import { AxiosError } from "axios";
 import JournalCard from "../../components/Journal/JournalCard";
 import Spinner from "../../components/UI/Spinner";
 import api from "../../services/api";
+import React from "react";
 
 export interface BasicJournal {
   entriesAmount: number;
@@ -48,7 +49,14 @@ const JournalsList = () => {
       >
         Your Journals
       </Typography>
-      <Box sx={{ display: "flex", justifyContent: "center", gap: "2rem" }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "center",
+          gap: "2rem",
+        }}
+      >
         {content}
       </Box>
     </Container>

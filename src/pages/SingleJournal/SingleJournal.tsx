@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import api from "../../services/api";
 import Spinner from "../../components/UI/Spinner";
 import { Alert, Box, Button } from "@mui/material";
@@ -10,6 +10,7 @@ import JournalEntriesTable from "../../components/Journal/JournalEntriesTable";
 import JournalEntriesFilter from "../../components/Journal/JournalEntriesFilter";
 import { Fragment, useEffect, useState } from "react";
 import EntryFormDialog from "../../components/Entry/EntryFormDialog";
+import React from "react";
 
 type MouseEvent = React.MouseEvent<HTMLButtonElement, globalThis.MouseEvent>;
 
@@ -56,7 +57,8 @@ const SingleJournal = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "start",
-          maxWidth: 950,
+          maxWidth: "95%",
+          width: 950,
           margin: "3rem auto",
           gap: "0.5rem",
         }}
@@ -69,7 +71,10 @@ const SingleJournal = () => {
             flexWrap: "wrap",
           }}
         >
-          <Box sx={{ display: "flex", gap: "1rem" }}>
+          <Box
+            sx={{ display: "flex", gap: "1rem" }}
+            className="SingleJournal__buttons"
+          >
             <Button
               variant="contained"
               color="error"
@@ -79,10 +84,11 @@ const SingleJournal = () => {
               NEW ENTRY
             </Button>
             <Button
+              component={Link}
+              to="/"
               variant="contained"
               color="info"
               startIcon={<ArrowBackIcon />}
-              onClick={(e: MouseEvent) => console.log("back")}
             >
               BACK
             </Button>

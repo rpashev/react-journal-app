@@ -7,3 +7,45 @@
 body {
   padding-top: 4rem;
 }
+
+#root {
+  min-width: 300px;
+}
+
+@media (min-width: 600px) {
+  .JournalEntriesTable__Mobile-cards {
+    display: none !important;
+  }
+}
+
+@media (max-width: 772px) {
+  .SingleJournal__buttons {
+    margin-bottom: 0.75rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .JournalEntriesTable-desktop {
+    display: none !important;
+  }
+  .JournalEntriesFilter {
+    flex-direction: column;
+    width: 100%;
+    margin: 0 auto;
+    margin-top: 1rem;
+  }
+  .JournalEntriesFilter > div {
+    width: 100%;
+  }
+  .SingleJournal__buttons {
+    width: 100% !important;
+    margin: 0 auto;
+  }
+  .SingleJournal__buttons > a,
+  button {
+    width: 50%;
+  }
+}
+/* .JournalEntriesTable__Mobile-cards {
+  width: 1000px ;
+} */

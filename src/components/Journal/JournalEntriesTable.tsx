@@ -9,12 +9,19 @@ import {
   IconButton,
   Typography,
   TablePagination,
+  Card,
+  CardContent,
+  CardActions,
+  Box,
+  Divider,
 } from "@mui/material";
 import { Edit, Delete, Visibility } from "@material-ui/icons";
 import { grey } from "@mui/material/colors";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { filterByDate } from "../../utils/validations";
 import { entryContent } from "../../utils/formatters";
+import React from "react";
+import { JournalEntriesTableEntryCard } from "./JournalEntriesTableEntryCard";
 
 export interface Entry {
   body: string;
@@ -93,11 +100,11 @@ const JournalEntriesTable = ({ entries, searchFilter, timeFilter }: Props) => {
     <Fragment>
       <TableContainer component={Paper}>
         <Table
-          sx={{ minWidth: 650, maxWidth: "100%" }}
+          sx={{ minWidth: 350, maxWidth: "100%" }}
           aria-label="simple table"
           size="small"
         >
-          <TableHead>
+          <TableHead className="JournalEntriesTable-desktop">
             <TableRow sx={{ backgroundColor: grey[100] }}>
               {headCells.map((c) => (
                 <TableCell sx={{ fontWeight: "bold" }} key={c.id}>
@@ -106,7 +113,23 @@ const JournalEntriesTable = ({ entries, searchFilter, timeFilter }: Props) => {
               ))}
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody
+            sx={{
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "1.5rem",
+              flexWrap: "wrap",
+              color: "white",
+            }}
+            className="JournalEntriesTable__Mobile-cards"
+          >
+            {visibleRows.map((e) => {
+              return <JournalEntriesTableEntryCard entry={e} />;
+            })}
+          </TableBody>
+          <TableBody className="JournalEntriesTable-desktop">
             {visibleRows.map((e) => (
               <TableRow
                 hover

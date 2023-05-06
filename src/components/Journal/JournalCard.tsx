@@ -6,27 +6,18 @@ import Typography from "@mui/material/Typography";
 import { Box, Button, CardActionArea, Tooltip } from "@mui/material";
 import img from "../../assets/journal.jpg";
 import { useNavigate } from "react-router-dom";
+import React from "react";
 
 interface Props {
   journal: BasicJournal;
 }
 
-type MouseEvent = React.MouseEvent<HTMLButtonElement, globalThis.MouseEvent>;
-
 const JournalCard = ({ journal }: Props) => {
   const navigate = useNavigate();
 
-  const navigateToPage = (event: MouseEvent, path: string = "default") => {
-    event.stopPropagation();
-    if (path === "create") {
-      return navigate(`journals/${journal.id}/create-entry`);
-    }
-    return navigate(`journals/${journal.id}`);
-  };
-
   return (
     <Card
-      sx={{ maxWidth: 310 }}
+      sx={{ width: 300 }}
       onClick={() => navigate(`/journals/${journal.id}`)}
     >
       <CardActionArea component="div">
@@ -89,24 +80,6 @@ const JournalCard = ({ journal }: Props) => {
             </CardContent>
           </Box>
         </Tooltip>
-        <Box sx={{ display: "flex", gap: "0.5rem" }}>
-          <Button
-            variant="contained"
-            color="error"
-            sx={{ width: "50%" }}
-            onClick={(e: MouseEvent) => navigateToPage(e, "create")}
-          >
-            NEW ENTRY
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            sx={{ width: "50%" }}
-            onClick={(e: MouseEvent) => navigateToPage(e)}
-          >
-            VIEW ENTRIES
-          </Button>
-        </Box>
       </CardActionArea>
     </Card>
   );
