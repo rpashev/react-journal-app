@@ -9,11 +9,6 @@ import {
   IconButton,
   Typography,
   TablePagination,
-  Card,
-  CardContent,
-  CardActions,
-  Box,
-  Divider,
 } from "@mui/material";
 import { Edit, Delete, Visibility } from "@material-ui/icons";
 import { grey } from "@mui/material/colors";
@@ -33,6 +28,9 @@ interface Props {
   entries: Entry[];
   searchFilter: string;
   timeFilter: string;
+  onOpenDetailsDialog: () => void;
+  onOpenEditDialog: () => void;
+  setSelectedEntryId: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 const headCells = [
@@ -46,7 +44,14 @@ const headCells = [
   { id: "actions", isVisible: true, label: "Actions" },
 ];
 
-const JournalEntriesTable = ({ entries, searchFilter, timeFilter }: Props) => {
+const JournalEntriesTable = ({
+  entries,
+  searchFilter,
+  timeFilter,
+  onOpenDetailsDialog,
+  onOpenEditDialog,
+  setSelectedEntryId,
+}: Props) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [filteredRows, setFilteredRows] = useState(entries);
@@ -93,6 +98,19 @@ const JournalEntriesTable = ({ entries, searchFilter, timeFilter }: Props) => {
   };
 
   const onRowClick = (event: any, id: string) => {
+    event.stopPropagation();
+    setSelectedEntryId(id);
+    onOpenDetailsDialog();
+  };
+
+  const onClickOpenEdit = (event: any, id: string) => {
+    event.stopPropagation();
+    setSelectedEntryId(id);
+    onOpenEditDialog();
+  };
+
+  const onClickDelete = (event: any, id: string) => {
+    event.stopPropagation();
     console.log(id);
   };
 
@@ -126,7 +144,15 @@ const JournalEntriesTable = ({ entries, searchFilter, timeFilter }: Props) => {
             className="JournalEntriesTable__Mobile-cards"
           >
             {visibleRows.map((e) => {
-              return <JournalEntriesTableEntryCard entry={e} />;
+              return (
+                <JournalEntriesTableEntryCard
+                  onClickOpenEdit={onClickOpenEdit}
+                  onClickDelete={onClickDelete}
+                  onClickOpenDetails={onRowClick}
+                  key={e._id}
+                  entry={e}
+                />
+              );
             })}
           </TableBody>
           <TableBody className="JournalEntriesTable-desktop">
@@ -154,13 +180,22 @@ const JournalEntriesTable = ({ entries, searchFilter, timeFilter }: Props) => {
                   })}
                 </TableCell>
                 <TableCell align="left">
-                  <IconButton aria-label="view">
+                  <IconButton
+                    aria-label="view"
+                    onClick={(event) => onRowClick(event, e._id)}
+                  >
                     <Visibility />
                   </IconButton>
-                  <IconButton aria-label="edit">
+                  <IconButton
+                    aria-label="edit"
+                    onClick={(event) => onClickOpenEdit(event, e._id)}
+                  >
                     <Edit />
                   </IconButton>
-                  <IconButton aria-label="delete">
+                  <IconButton
+                    onClick={(event) => onClickDelete(event, e._id)}
+                    aria-label="delete"
+                  >
                     <Delete />
                   </IconButton>
                 </TableCell>

@@ -2,13 +2,11 @@ import {
   Box,
   IconButton,
   InputAdornment,
-  InputLabel,
   MenuItem,
   Select,
   TextField,
 } from "@mui/material";
 import Search from "@material-ui/icons/Search";
-import { useState } from "react";
 import React from "react";
 
 interface Props {

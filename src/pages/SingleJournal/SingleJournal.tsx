@@ -8,11 +8,10 @@ import AddIcon from "@material-ui/icons/Add";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import JournalEntriesTable from "../../components/Journal/JournalEntriesTable";
 import JournalEntriesFilter from "../../components/Journal/JournalEntriesFilter";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 import EntryFormDialog from "../../components/Entry/EntryFormDialog";
 import React from "react";
-
-type MouseEvent = React.MouseEvent<HTMLButtonElement, globalThis.MouseEvent>;
+import EntryDetailsDialog from "../../components/Entry/EntryDetailsDialog";
 
 const SingleJournal = () => {
   const { journalId } = useParams();
@@ -23,7 +22,10 @@ const SingleJournal = () => {
 
   const [searchFilter, setSearchFilter] = useState("");
   const [timeFilter, setTimeFilter] = useState("All Time");
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openAddDialog, setOpenAddDialog] = useState(false);
+  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
 
   if (isLoading) {
     return <Spinner />;
@@ -34,20 +36,31 @@ const SingleJournal = () => {
       <Alert severity="error">{err.message || "Could not load journal"}</Alert>
     );
   }
-  // useEffect(() => {
-  //   console.log(datae );
-  // }, [data]);
 
-  // let journal = data?.data || [];
-
-  // console.log(journal);
-
-  const onAddNewEntry = () => {
-    setOpenDialog(true);
+  const onOpenAddDialog = () => {
+    setOpenAddDialog(true);
   };
 
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
+  const handleCloseAddDialog = () => {
+    setOpenAddDialog(false);
+    setSelectedEntryId(null);
+  };
+  const onOpenDetailsDialog = () => {
+    setOpenDetailsDialog(true);
+  };
+
+  const handleCloseDetailsDialog = () => {
+    setOpenDetailsDialog(false);
+    setSelectedEntryId(null);
+  };
+
+  const onOpenEditDialog = () => {
+    setOpenEditDialog(true);
+  };
+
+  const handleCloseEditDialog = () => {
+    setOpenEditDialog(false);
+    setSelectedEntryId(null);
   };
 
   return (
@@ -79,7 +92,7 @@ const SingleJournal = () => {
               variant="contained"
               color="error"
               startIcon={<AddIcon />}
-              onClick={onAddNewEntry}
+              onClick={onOpenAddDialog}
             >
               NEW ENTRY
             </Button>
@@ -104,11 +117,27 @@ const SingleJournal = () => {
           entries={data?.data?.entries}
           searchFilter={searchFilter}
           timeFilter={timeFilter}
+          onOpenDetailsDialog={onOpenDetailsDialog}
+          onOpenEditDialog={onOpenEditDialog}
+          setSelectedEntryId={setSelectedEntryId}
         />
       </Box>
       <EntryFormDialog
-        open={openDialog}
-        handleClose={handleCloseDialog}
+        open={openAddDialog}
+        handleClose={handleCloseAddDialog}
+        entryId={null}
+        journalId={journalId!}
+      />
+      <EntryFormDialog
+        open={openEditDialog}
+        handleClose={handleCloseEditDialog}
+        entryId={selectedEntryId}
+        journalId={journalId!}
+      />
+      <EntryDetailsDialog
+        open={openDetailsDialog}
+        handleClose={handleCloseDetailsDialog}
+        entryId={selectedEntryId}
         journalId={journalId!}
       />
     </Fragment>

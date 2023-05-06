@@ -12,9 +12,17 @@ import { Entry } from "./JournalEntriesTable";
 
 interface Props {
   entry: Entry;
+  onClickOpenEdit: (event: any, id: string) => void;
+  onClickDelete: (event: any, id: string) => void;
+  onClickOpenDetails: (event: any, id: string) => void;
 }
 
-export const JournalEntriesTableEntryCard = ({ entry }: Props) => {
+export const JournalEntriesTableEntryCard = ({
+  entry,
+  onClickOpenEdit,
+  onClickDelete,
+  onClickOpenDetails,
+}: Props) => {
   return (
     <Card
       sx={{
@@ -62,6 +70,7 @@ export const JournalEntriesTableEntryCard = ({ entry }: Props) => {
             <IconButton
               aria-label="view"
               sx={{ width: "50px", height: "50px" }}
+              onClick={(event) => onClickOpenDetails(event, entry._id)}
             >
               <Visibility />
             </IconButton>
@@ -69,6 +78,7 @@ export const JournalEntriesTableEntryCard = ({ entry }: Props) => {
               aria-label="edit"
               size="large"
               sx={{ width: "50px", height: "50px" }}
+              onClick={(event) => onClickOpenEdit(event, entry._id)}
             >
               <Edit />
             </IconButton>
@@ -76,6 +86,7 @@ export const JournalEntriesTableEntryCard = ({ entry }: Props) => {
               aria-label="delete"
               size="large"
               sx={{ width: "50px", height: "50px" }}
+              onClick={(event) => onClickDelete(event, entry._id)}
             >
               <Delete />
             </IconButton>

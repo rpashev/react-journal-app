@@ -1,7 +1,10 @@
 import axios, { AxiosResponse } from "axios";
 import { LoginInputState } from "../pages/Login/Login";
 import axiosAuth from "./axios";
-import { EntryInputState } from "../components/Entry/EntryFormDialog";
+import {
+  EntryEditInputState,
+  EntryInputState,
+} from "../components/Entry/EntryFormDialog";
 
 export default {
   login(inputs: LoginInputState) {
@@ -48,9 +51,9 @@ export default {
     return axiosAuth.get(`/${journalID}/${entryID}`);
   },
 
-  editEntry(journalID: string, entryID: string, title: string, body: string) {
-    const data = { title, body };
-    return axiosAuth.patch(`/${journalID}/${entryID}`, data);
+  editEntry(data: EntryEditInputState) {
+    const payload = { title: data.title, body: data.body };
+    return axiosAuth.patch(`/${data.journalId}/${data.entryId}`, payload);
   },
 
   deleteEntry(journalID: string, entryID: string) {

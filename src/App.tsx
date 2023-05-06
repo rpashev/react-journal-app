@@ -12,6 +12,7 @@ import Logout from "./pages/Logout/Logout";
 import Register from "./pages/Register/Register";
 import SingleEntry from "./pages/SingleEntry/SingleEntry";
 import SingleJournal from "./pages/SingleJournal/SingleJournal";
+import React from "react";
 
 function App() {
   const context = useContext(AuthContext);

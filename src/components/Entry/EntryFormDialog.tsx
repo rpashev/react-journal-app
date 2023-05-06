@@ -10,18 +10,21 @@ import {
   IconButton,
 } from "@mui/material";
 import Close from "@material-ui/icons/Close";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { formats, toolbarOptions } from "../../utils/quill";
 import { entryContent } from "../../utils/formatters";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import api from "../../services/api";
+import React from "react";
+import Spinner from "../UI/Spinner";
 
 interface Props {
   open: boolean;
   handleClose: () => void;
+  entryId: string | null;
   journalId: string;
 }
 
@@ -32,7 +35,14 @@ export interface EntryInputState {
   id: string;
 }
 
-const EntryFormDialog = ({ open, handleClose, journalId }: Props) => {
+export interface EntryEditInputState {
+  body: string;
+  title: string;
+  entryId: string;
+  journalId: string;
+}
+
+const EntryFormDialog = ({ open, handleClose, entryId, journalId }: Props) => {
   const [body, setBody] = useState("");
   const [title, setTitle] = useState("");
 
@@ -40,6 +50,12 @@ const EntryFormDialog = ({ open, handleClose, journalId }: Props) => {
   Quill.register(AlignStyle, true);
 
   const queryClient = useQueryClient();
+
+  const handleCloseAndClearState = () => {
+    handleClose();
+    setBody("");
+    setTitle("");
+  };
 
   const { isError, error, isLoading, mutate } = useMutation<
     any,
@@ -50,20 +66,87 @@ const EntryFormDialog = ({ open, handleClose, journalId }: Props) => {
       queryClient.invalidateQueries({
         queryKey: ["single-journal", journalId],
       });
-      handleClose();
-      setBody("");
-      setTitle("");
+      handleCloseAndClearState();
     },
   });
 
+  const {
+    isError: isErrorEditing,
+    error: errorEditing,
+    isLoading: isLoadingEditing,
+    mutate: mutateEdit,
+  } = useMutation<any, AxiosError, EntryEditInputState>(api.editEntry, {
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["single-journal", journalId],
+      });
+      handleCloseAndClearState();
+    },
+  });
+
+  const {
+    data,
+    error: errorGet,
+    isError: isErrorGetting,
+    isLoading: isLoadingEntry,
+  } = useQuery<any, AxiosError>(
+    ["single-entry", entryId],
+    () => api.getEntry(journalId, entryId || ""),
+    {
+      onSuccess: (data) => {
+        setBody(data?.data?.body);
+        setTitle(data?.data?.title);
+      },
+      enabled: entryId !== null,
+    }
+  );
+
   const handleSubmit = () => {
-    const date = new Date().toISOString().slice(0, 10);
-    const data = { title, body, date, id: journalId };
-    mutate(data);
+    if (entryId !== null) {
+      const data = { title, body, entryId, journalId };
+      mutateEdit(data);
+    } else {
+      const date = new Date().toISOString().slice(0, 10);
+      const data = { title, body, date, id: journalId };
+      mutate(data);
+    }
   };
+
+  if (isLoadingEntry) {
+    return (
+      <Dialog
+        keepMounted={false}
+        maxWidth="xl"
+        open={open}
+        fullWidth
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
+        <DialogTitle>
+          {entryId ? "Edit Entry" + entryId : "Create a New Entry"}
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ width: "100%", height: "500px", marginTop: "0.75rem" }}>
+            <Spinner />
+          </Box>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // useEffect(() => {
+  //   return () => {
+  //     setBody("");
+  //     setTitle("");
+  //   };
+  // }, []);
 
   return (
     <Dialog
+      keepMounted={false}
       maxWidth="xl"
       open={open}
       fullWidth
@@ -75,7 +158,7 @@ const EntryFormDialog = ({ open, handleClose, journalId }: Props) => {
     >
       <IconButton
         aria-label="close"
-        onClick={handleClose}
+        onClick={handleCloseAndClearState}
         sx={{
           position: "absolute",
           right: 8,
@@ -85,7 +168,9 @@ const EntryFormDialog = ({ open, handleClose, journalId }: Props) => {
       >
         <Close />
       </IconButton>
-      <DialogTitle>Create a New Entry</DialogTitle>
+      <DialogTitle>
+        {entryId ? "Edit Entry" + entryId : "Create a New Entry"}
+      </DialogTitle>
       <DialogContent>
         <Box sx={{ width: "100%", height: "500px", marginTop: "0.75rem" }}>
           <TextField
@@ -97,6 +182,7 @@ const EntryFormDialog = ({ open, handleClose, journalId }: Props) => {
             required
             size="small"
             sx={{ marginBottom: "0.5rem" }}
+            value={title}
           />
           <ReactQuill
             placeholder="Share your thoughts..."
@@ -110,7 +196,7 @@ const EntryFormDialog = ({ open, handleClose, journalId }: Props) => {
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
+        <Button onClick={handleCloseAndClearState}>Cancel</Button>
         <Button
           disabled={!body || !title || !entryContent(body) || isLoading}
           color="secondary"
@@ -118,7 +204,7 @@ const EntryFormDialog = ({ open, handleClose, journalId }: Props) => {
           onClick={handleSubmit}
           type="submit"
         >
-          {isLoading ? "Saving..." : "Submit"}
+          {isLoading || isLoadingEditing ? "Saving..." : "Submit"}
         </Button>
       </DialogActions>
     </Dialog>
