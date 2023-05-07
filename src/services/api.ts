@@ -5,6 +5,7 @@ import {
   EntryEditInputState,
   EntryInputState,
 } from "../components/Entry/EntryFormDialog";
+import { DeleteEntryState } from "../pages/SingleJournal/SingleJournal";
 
 export default {
   login(inputs: LoginInputState) {
@@ -56,7 +57,7 @@ export default {
     return axiosAuth.patch(`/${data.journalId}/${data.entryId}`, payload);
   },
 
-  deleteEntry(journalID: string, entryID: string) {
-    return axiosAuth.delete(`/${journalID}/${entryID}`);
+  deleteEntry(data: DeleteEntryState) {
+    return axiosAuth.delete(`/${data.journalId}/${data.entryId}`);
   },
 };

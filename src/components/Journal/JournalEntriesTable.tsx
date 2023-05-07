@@ -30,7 +30,8 @@ interface Props {
   timeFilter: string;
   onOpenDetailsDialog: () => void;
   onOpenEditDialog: () => void;
-  setSelectedEntryId: React.Dispatch<React.SetStateAction<string | null>>;
+  onOpenDeleteDialog: () => void;
+  setSelectedEntry: React.Dispatch<React.SetStateAction<Entry | null>>;
 }
 
 const headCells = [
@@ -50,7 +51,8 @@ const JournalEntriesTable = ({
   timeFilter,
   onOpenDetailsDialog,
   onOpenEditDialog,
-  setSelectedEntryId,
+  onOpenDeleteDialog,
+  setSelectedEntry,
 }: Props) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -97,21 +99,22 @@ const JournalEntriesTable = ({
     setPage(0);
   };
 
-  const onRowClick = (event: any, id: string) => {
+  const onRowClick = (event: any, entry: Entry) => {
     event.stopPropagation();
-    setSelectedEntryId(id);
+    setSelectedEntry(entry);
     onOpenDetailsDialog();
   };
 
-  const onClickOpenEdit = (event: any, id: string) => {
+  const onClickOpenEdit = (event: any, entry: Entry) => {
     event.stopPropagation();
-    setSelectedEntryId(id);
+    setSelectedEntry(entry);
     onOpenEditDialog();
   };
 
-  const onClickDelete = (event: any, id: string) => {
+  const onClickDelete = (event: any, entry: Entry) => {
     event.stopPropagation();
-    console.log(id);
+    setSelectedEntry(entry);
+    onOpenDeleteDialog();
   };
 
   return (
@@ -159,7 +162,7 @@ const JournalEntriesTable = ({
             {visibleRows.map((e) => (
               <TableRow
                 hover
-                onClick={(event) => onRowClick(event, e._id)}
+                onClick={(event) => onRowClick(event, e)}
                 key={e._id}
                 sx={{
                   "&:last-child td, &:last-child th": { border: 0 },
@@ -182,18 +185,18 @@ const JournalEntriesTable = ({
                 <TableCell align="left">
                   <IconButton
                     aria-label="view"
-                    onClick={(event) => onRowClick(event, e._id)}
+                    onClick={(event) => onRowClick(event, e)}
                   >
                     <Visibility />
                   </IconButton>
                   <IconButton
                     aria-label="edit"
-                    onClick={(event) => onClickOpenEdit(event, e._id)}
+                    onClick={(event) => onClickOpenEdit(event, e)}
                   >
                     <Edit />
                   </IconButton>
                   <IconButton
-                    onClick={(event) => onClickDelete(event, e._id)}
+                    onClick={(event) => onClickDelete(event, e)}
                     aria-label="delete"
                   >
                     <Delete />

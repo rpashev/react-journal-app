@@ -1,17 +1,23 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { Link, useParams } from "react-router-dom";
 import api from "../../services/api";
 import Spinner from "../../components/UI/Spinner";
-import { Alert, Box, Button } from "@mui/material";
+import { Alert, Box, Button, Snackbar } from "@mui/material";
 import AddIcon from "@material-ui/icons/Add";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-import JournalEntriesTable from "../../components/Journal/JournalEntriesTable";
+import JournalEntriesTable, {
+  Entry,
+} from "../../components/Journal/JournalEntriesTable";
 import JournalEntriesFilter from "../../components/Journal/JournalEntriesFilter";
 import { Fragment, useState } from "react";
 import EntryFormDialog from "../../components/Entry/EntryFormDialog";
-import React from "react";
 import EntryDetailsDialog from "../../components/Entry/EntryDetailsDialog";
+import EntryConfirmDeleteDialog from "../../components/Entry/EntryConfirmDeleteDialog";
+export interface DeleteEntryState {
+  journalId: string;
+  entryId: string;
+}
 
 const SingleJournal = () => {
   const { journalId } = useParams();
@@ -22,18 +28,49 @@ const SingleJournal = () => {
 
   const [searchFilter, setSearchFilter] = useState("");
   const [timeFilter, setTimeFilter] = useState("All Time");
+
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [severitySnackbar, setSeveritySnackbar] = useState("success");
+
+  const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
+  const queryClient = useQueryClient();
+
+  const {
+    isError: isErrorDelete,
+    error: errorDelete,
+    isLoading: isLoadingDelete,
+    mutate,
+  } = useMutation<any, AxiosError, DeleteEntryState>(api.deleteEntry, {
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["single-journal", journalId],
+      });
+      setOpenDeleteDialog(false);
+      onOpenSnackbar("Successfully deleted entry!", "success");
+    },
+    onError: () => {
+      const err: any = error?.response?.data;
+      onOpenSnackbar(err?.message || "Error deleting entry!", "error");
+    },
+  });
 
   if (isLoading) {
-    return <Spinner />;
+    return (
+      <Box sx={{ marginTop: "4rem" }}>
+        <Spinner />
+      </Box>
+    );
   } else if (isError) {
     let err: any = error?.response?.data;
 
     return (
-      <Alert severity="error">{err.message || "Could not load journal"}</Alert>
+      <Alert severity="error">{err?.message || "Could not load journal"}</Alert>
     );
   }
 
@@ -43,7 +80,7 @@ const SingleJournal = () => {
 
   const handleCloseAddDialog = () => {
     setOpenAddDialog(false);
-    setSelectedEntryId(null);
+    setSelectedEntry(null);
   };
   const onOpenDetailsDialog = () => {
     setOpenDetailsDialog(true);
@@ -51,7 +88,7 @@ const SingleJournal = () => {
 
   const handleCloseDetailsDialog = () => {
     setOpenDetailsDialog(false);
-    setSelectedEntryId(null);
+    setSelectedEntry(null);
   };
 
   const onOpenEditDialog = () => {
@@ -60,7 +97,31 @@ const SingleJournal = () => {
 
   const handleCloseEditDialog = () => {
     setOpenEditDialog(false);
-    setSelectedEntryId(null);
+    setSelectedEntry(null);
+  };
+
+  const onOpenDeleteDialog = () => {
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+  };
+
+  const onOpenSnackbar = (message: string, severity = "success") => {
+    setSnackbarMessage(message);
+    setSeveritySnackbar(severity);
+    setOpenSnackbar(true);
+  };
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+    setSnackbarMessage("");
+  };
+
+  const handleDelete = () => {
+    const data = { journalId, entryId: selectedEntry?._id };
+    mutate(data as any);
   };
 
   return (
@@ -119,27 +180,50 @@ const SingleJournal = () => {
           timeFilter={timeFilter}
           onOpenDetailsDialog={onOpenDetailsDialog}
           onOpenEditDialog={onOpenEditDialog}
-          setSelectedEntryId={setSelectedEntryId}
+          onOpenDeleteDialog={onOpenDeleteDialog}
+          setSelectedEntry={setSelectedEntry}
         />
       </Box>
       <EntryFormDialog
         open={openAddDialog}
         handleClose={handleCloseAddDialog}
-        entryId={null}
+        entry={null}
         journalId={journalId!}
+        onOpenSnackbar={onOpenSnackbar}
       />
       <EntryFormDialog
         open={openEditDialog}
         handleClose={handleCloseEditDialog}
-        entryId={selectedEntryId}
+        entry={selectedEntry}
         journalId={journalId!}
+        onOpenSnackbar={onOpenSnackbar}
       />
       <EntryDetailsDialog
         open={openDetailsDialog}
         handleClose={handleCloseDetailsDialog}
-        entryId={selectedEntryId}
+        entry={selectedEntry!}
         journalId={journalId!}
       />
+      <EntryConfirmDeleteDialog
+        open={openDeleteDialog}
+        handleClose={handleCloseDeleteDialog}
+        handleDeleteEntry={handleDelete}
+        isDeleting={isLoadingDelete}
+      />
+      <Snackbar
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        open={openSnackbar}
+        onClose={handleCloseSnackbar}
+        autoHideDuration={4000}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={severitySnackbar as any}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Fragment>
   );
 };

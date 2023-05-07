@@ -2,15 +2,15 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogContentText,
   TextField,
   DialogActions,
   Button,
   Box,
   IconButton,
+  Alert,
 } from "@mui/material";
 import Close from "@material-ui/icons/Close";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useState } from "react";
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { formats, toolbarOptions } from "../../utils/quill";
@@ -18,14 +18,16 @@ import { entryContent } from "../../utils/formatters";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import api from "../../services/api";
-import React from "react";
+import React, { useEffect } from "react";
 import Spinner from "../UI/Spinner";
+import { Entry } from "../Journal/JournalEntriesTable";
 
 interface Props {
   open: boolean;
   handleClose: () => void;
-  entryId: string | null;
+  entry: Entry | null;
   journalId: string;
+  onOpenSnackbar: (message: string, severity?: string) => void;
 }
 
 export interface EntryInputState {
@@ -42,9 +44,15 @@ export interface EntryEditInputState {
   journalId: string;
 }
 
-const EntryFormDialog = ({ open, handleClose, entryId, journalId }: Props) => {
-  const [body, setBody] = useState("");
-  const [title, setTitle] = useState("");
+const EntryFormDialog = ({
+  open,
+  handleClose,
+  entry,
+  journalId,
+  onOpenSnackbar,
+}: Props) => {
+  const [body, setBody] = useState(entry?.body || "");
+  const [title, setTitle] = useState(entry?.title || "");
 
   const AlignStyle = Quill.import("attributors/style/align");
   Quill.register(AlignStyle, true);
@@ -52,10 +60,19 @@ const EntryFormDialog = ({ open, handleClose, entryId, journalId }: Props) => {
   const queryClient = useQueryClient();
 
   const handleCloseAndClearState = () => {
-    handleClose();
-    setBody("");
     setTitle("");
+    setBody("");
+    handleClose();
   };
+
+  useEffect(() => {
+    if (entry) {
+      setTitle(entry.title);
+      setBody(entry.body);
+    }
+
+    console.log(body);
+  }, [entry]);
 
   const { isError, error, isLoading, mutate } = useMutation<
     any,
@@ -67,6 +84,11 @@ const EntryFormDialog = ({ open, handleClose, entryId, journalId }: Props) => {
         queryKey: ["single-journal", journalId],
       });
       handleCloseAndClearState();
+      onOpenSnackbar("Successfully added entry!", "success");
+    },
+    onError: (error) => {
+      const err: any = error?.response?.data;
+      onOpenSnackbar(err?.message || "Error saving entry!", "error");
     },
   });
 
@@ -81,29 +103,17 @@ const EntryFormDialog = ({ open, handleClose, entryId, journalId }: Props) => {
         queryKey: ["single-journal", journalId],
       });
       handleCloseAndClearState();
+      onOpenSnackbar("Successfully modified entry!", "success");
+    },
+    onError: (error) => {
+      const err: any = error?.response?.data;
+      onOpenSnackbar(err?.message || "Error saving entry!", "error");
     },
   });
 
-  const {
-    data,
-    error: errorGet,
-    isError: isErrorGetting,
-    isLoading: isLoadingEntry,
-  } = useQuery<any, AxiosError>(
-    ["single-entry", entryId],
-    () => api.getEntry(journalId, entryId || ""),
-    {
-      onSuccess: (data) => {
-        setBody(data?.data?.body);
-        setTitle(data?.data?.title);
-      },
-      enabled: entryId !== null,
-    }
-  );
-
   const handleSubmit = () => {
-    if (entryId !== null) {
-      const data = { title, body, entryId, journalId };
+    if (entry !== null) {
+      const data = { title, body, entryId: entry._id, journalId };
       mutateEdit(data);
     } else {
       const date = new Date().toISOString().slice(0, 10);
@@ -111,38 +121,6 @@ const EntryFormDialog = ({ open, handleClose, entryId, journalId }: Props) => {
       mutate(data);
     }
   };
-
-  if (isLoadingEntry) {
-    return (
-      <Dialog
-        keepMounted={false}
-        maxWidth="xl"
-        open={open}
-        fullWidth
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-        }}
-      >
-        <DialogTitle>
-          {entryId ? "Edit Entry" + entryId : "Create a New Entry"}
-        </DialogTitle>
-        <DialogContent>
-          <Box sx={{ width: "100%", height: "500px", marginTop: "0.75rem" }}>
-            <Spinner />
-          </Box>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-
-  // useEffect(() => {
-  //   return () => {
-  //     setBody("");
-  //     setTitle("");
-  //   };
-  // }, []);
 
   return (
     <Dialog
@@ -163,14 +141,14 @@ const EntryFormDialog = ({ open, handleClose, entryId, journalId }: Props) => {
           position: "absolute",
           right: 8,
           top: 8,
+          maxWidth: "40px",
           color: (theme) => theme.palette.grey[500],
         }}
       >
         <Close />
       </IconButton>
-      <DialogTitle>
-        {entryId ? "Edit Entry" + entryId : "Create a New Entry"}
-      </DialogTitle>
+
+      <DialogTitle> {entry ? "Edit Entry" : "Create a New Entry"}</DialogTitle>
       <DialogContent>
         <Box sx={{ width: "100%", height: "500px", marginTop: "0.75rem" }}>
           <TextField
