@@ -1,19 +1,24 @@
 import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
-import { Box, Container, Typography, Alert } from "@mui/material";
+import { Box, Container, Typography, Alert, Button } from "@mui/material";
+import AddIcon from "@material-ui/icons/Add";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import JournalCard from "../../components/Journal/JournalCard";
 import Spinner from "../../components/UI/Spinner";
 import api from "../../services/api";
-import React from "react";
+import React, { useState } from "react";
+import JournalFormDialog from "../../components/Journal/JournalFormDialog";
 
 export interface BasicJournal {
   entriesAmount: number;
   id: string;
   journalName: string;
+  description?: string;
 }
 
 const JournalsList = () => {
+  const [openAddDialog, setOpenAddDialog] = useState(false);
+
   const { data, error, isError, isLoading } = useQuery<any, AxiosError>(
     ["journals"],
     api.getJournals
@@ -39,6 +44,14 @@ const JournalsList = () => {
     });
   }
 
+  const onOpenAddDialog = () => {
+    setOpenAddDialog(true);
+  };
+
+  const handleCloseAddDialog = () => {
+    setOpenAddDialog(false);
+  };
+
   return (
     <Container>
       <Typography
@@ -49,6 +62,14 @@ const JournalsList = () => {
       >
         Your Journals
       </Typography>
+      <Button
+        variant="contained"
+        color="error"
+        startIcon={<AddIcon />}
+        onClick={onOpenAddDialog}
+      >
+        NEW ENTRY
+      </Button>
       <Box
         sx={{
           display: "flex",
@@ -59,6 +80,10 @@ const JournalsList = () => {
       >
         {content}
       </Box>
+      <JournalFormDialog
+        open={openAddDialog}
+        handleClose={handleCloseAddDialog}
+      />
     </Container>
   );
 };

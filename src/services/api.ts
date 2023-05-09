@@ -6,6 +6,10 @@ import {
   EntryInputState,
 } from "../components/Entry/EntryFormDialog";
 import { DeleteEntryState } from "../pages/SingleJournal/SingleJournal";
+import {
+  JournalEditInputState,
+  JournalInputState,
+} from "../components/Journal/JournalFormDialog";
 
 export default {
   login(inputs: LoginInputState) {
@@ -22,13 +26,17 @@ export default {
     });
   },
 
+  createJournal(data: JournalInputState) {
+    console.log("hereeeeeeee");
+    return axiosAuth.post("create-journal", data);
+  },
+
   getJournal(id: string | undefined) {
     return axiosAuth.get(`/${id}`);
   },
 
-  updateJournal(id: string, formState: any) {
-    //formState to be typed
-    return axiosAuth.patch(`/${id}`, formState);
+  updateJournal(data: JournalEditInputState) {
+    return axiosAuth.patch(`/${data.journalId}`, data);
   },
 
   deleteJournal(id: string) {
