@@ -68,6 +68,7 @@ const JournalFormDialog = ({ open, handleClose, journal }: Props) => {
     },
     onError: (error) => {
       console.log(error);
+      console.log("here");
       const err: any = error?.response?.data;
       //   onOpenSnackbar(err?.message || "Error saving entry!", "error");
     },
@@ -90,7 +91,10 @@ const JournalFormDialog = ({ open, handleClose, journal }: Props) => {
   });
 
   const handleSubmit = () => {
-    if (journal !== null) {
+    console.log("before check");
+    if (journal) {
+      console.log(journal);
+      console.log("after check");
       const data = { journalName, description, journalId: journal?.id! };
       mutateEdit(data);
     } else {
@@ -102,7 +106,7 @@ const JournalFormDialog = ({ open, handleClose, journal }: Props) => {
   return (
     <Dialog
       keepMounted={false}
-      maxWidth="xl"
+      maxWidth="sm"
       open={open}
       fullWidth
       sx={{
@@ -117,20 +121,27 @@ const JournalFormDialog = ({ open, handleClose, journal }: Props) => {
         sx={{
           position: "absolute",
           right: 8,
-          top: 8,
+          top: 4,
           maxWidth: "40px",
-          color: (theme) => theme.palette.grey[500],
+          color: "#fff",
         }}
       >
         <Close />
       </IconButton>
 
-      <DialogTitle>
+      <DialogTitle
+        sx={{ backgroundColor: "#9c27b0", color: "#fff", paddingBlock: 1 }}
+      >
         {" "}
         {journal ? "Edit Journal" : "Create a New Journal"}
       </DialogTitle>
       <DialogContent>
-        <Box sx={{ width: "100%", height: "500px", marginTop: "0.75rem" }}>
+        <Box
+          sx={{
+            width: "100%",
+            marginTop: 4,
+          }}
+        >
           <TextField
             onChange={(e) => setJournalName(e.target.value)}
             fullWidth
@@ -139,7 +150,7 @@ const JournalFormDialog = ({ open, handleClose, journal }: Props) => {
             color="secondary"
             required
             size="small"
-            sx={{ marginBottom: "0.5rem" }}
+            sx={{ marginBottom: "1rem" }}
             value={journalName}
           />
           <TextField
@@ -149,8 +160,9 @@ const JournalFormDialog = ({ open, handleClose, journal }: Props) => {
             variant="outlined"
             color="secondary"
             required
+            multiline
             size="small"
-            sx={{ marginBottom: "0.5rem" }}
+            sx={{ marginBottom: "1rem" }}
             value={description}
           />
         </Box>

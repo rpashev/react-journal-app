@@ -125,7 +125,7 @@ const EntryFormDialog = ({
   return (
     <Dialog
       keepMounted={false}
-      maxWidth="xl"
+      maxWidth="md"
       open={open}
       fullWidth
       sx={{
@@ -140,17 +140,22 @@ const EntryFormDialog = ({
         sx={{
           position: "absolute",
           right: 8,
-          top: 8,
+          top: 4,
           maxWidth: "40px",
-          color: (theme) => theme.palette.grey[500],
+          color: "#fff",
         }}
       >
         <Close />
       </IconButton>
 
-      <DialogTitle> {entry ? "Edit Entry" : "Create a New Entry"}</DialogTitle>
+      <DialogTitle
+        sx={{ backgroundColor: "#9c27b0", color: "#fff", paddingBlock: 1 }}
+      >
+        {" "}
+        {entry ? "Edit Entry" : "Create a New Entry"}
+      </DialogTitle>
       <DialogContent>
-        <Box sx={{ width: "100%", height: "500px", marginTop: "0.75rem" }}>
+        <Box sx={{ width: "100%", height: "500px", marginTop: 4 }}>
           <TextField
             onChange={(e) => setTitle(e.target.value)}
             fullWidth

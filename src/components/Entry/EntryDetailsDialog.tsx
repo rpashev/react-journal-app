@@ -52,9 +52,9 @@ const EntryDetailsDialog = ({ entry, journalId, open, handleClose }: Props) => {
         sx={{
           position: "absolute",
           right: 8,
-          top: 8,
+          top: 4,
           maxWidth: "40px",
-          color: (theme) => theme.palette.grey[500],
+          color: "#fff",
         }}
       >
         <Close />
@@ -63,14 +63,21 @@ const EntryDetailsDialog = ({ entry, journalId, open, handleClose }: Props) => {
       <Fragment>
         {entry?.title && entry?.body && (
           <DialogTitle
-            sx={{ display: "flex", alignItems: "flex-end", gap: "1rem" }}
+            sx={{
+              display: "flex",
+              alignItems: "flex-end",
+              gap: "1rem",
+              backgroundColor: "#9c27b0",
+              color: "#fff",
+              paddingBlock: 1,
+            }}
           >
             {entry?.title} from {formatDate(entry?.date)}
           </DialogTitle>
         )}
 
         <DialogContent
-          sx={{ fontSize: "20px", minHeight: "500px" }}
+          sx={{ fontSize: "20px", minHeight: "500px", marginTop: 4 }}
           dangerouslySetInnerHTML={{ __html: entry?.body }}
         ></DialogContent>
       </Fragment>

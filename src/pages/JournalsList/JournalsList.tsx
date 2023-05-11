@@ -54,22 +54,31 @@ const JournalsList = () => {
 
   return (
     <Container>
-      <Typography
-        variant="h4"
-        component="h2"
-        color="secondary"
-        sx={{ textAlign: "center", marginTop: 5, marginBottom: 5 }}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          marginBottom: 5,
+        }}
       >
-        Your Journals
-      </Typography>
-      <Button
-        variant="contained"
-        color="error"
-        startIcon={<AddIcon />}
-        onClick={onOpenAddDialog}
-      >
-        NEW ENTRY
-      </Button>
+        <Typography
+          variant="h4"
+          component="h2"
+          color="secondary"
+          sx={{ textAlign: "center", marginTop: 3, marginBottom: 2 }}
+        >
+          Your Journals
+        </Typography>
+        <Button
+          variant="contained"
+          color="error"
+          startIcon={<AddIcon />}
+          onClick={onOpenAddDialog}
+        >
+          NEW JOURNAL
+        </Button>
+      </Box>
       <Box
         sx={{
           display: "flex",
