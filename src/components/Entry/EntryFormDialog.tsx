@@ -10,24 +10,23 @@ import {
   Alert,
 } from "@mui/material";
 import Close from "@material-ui/icons/Close";
-import { Fragment, useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { formats, toolbarOptions } from "../../utils/quill";
 import { entryContent } from "../../utils/formatters";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import api from "../../services/api";
-import React, { useEffect } from "react";
-import Spinner from "../UI/Spinner";
 import { Entry } from "../Journal/JournalEntriesTable";
+import SnackbarContext from "../../context/snackbar-context";
+import useInput from "../../hooks/use-input";
 
 interface Props {
   open: boolean;
   handleClose: () => void;
   entry: Entry | null;
   journalId: string;
-  onOpenSnackbar: (message: string, severity?: string) => void;
 }
 
 export interface EntryInputState {
@@ -44,26 +43,35 @@ export interface EntryEditInputState {
   journalId: string;
 }
 
-const EntryFormDialog = ({
-  open,
-  handleClose,
-  entry,
-  journalId,
-  onOpenSnackbar,
-}: Props) => {
-  const [body, setBody] = useState(entry?.body || "");
-  const [title, setTitle] = useState(entry?.title || "");
+const EntryFormDialog = ({ open, handleClose, entry, journalId }: Props) => {
+  const [body, setBody] = useState("");
+  const [bodyIsTouched, setBodyIsTouched] = useState(false);
+  const {
+    value: title,
+    hasError: titleError,
+    isValid: titleIsValid,
+    valueChangeHandler: titleChangeHandler,
+    inputBlurHandler: titleBlurHandler,
+    reset: resetTitle,
+    setEnteredValue: setTitle,
+  } = useInput((value) => value.length > 0);
 
   const AlignStyle = Quill.import("attributors/style/align");
   Quill.register(AlignStyle, true);
 
   const queryClient = useQueryClient();
+  const snackbarContext = useContext(SnackbarContext);
 
   const handleCloseAndClearState = () => {
-    setTitle("");
+    resetTitle();
     setBody("");
+    setBodyIsTouched(false);
     handleClose();
   };
+
+  useEffect(() => {
+    console.log(body);
+  }, [body]);
 
   useEffect(() => {
     if (entry) {
@@ -84,11 +92,14 @@ const EntryFormDialog = ({
         queryKey: ["single-journal", journalId],
       });
       handleCloseAndClearState();
-      onOpenSnackbar("Successfully added entry!", "success");
+      snackbarContext.showMessage("Successfully added entry!");
     },
     onError: (error) => {
       const err: any = error?.response?.data;
-      onOpenSnackbar(err?.message || "Error saving entry!", "error");
+      snackbarContext.showMessage(
+        err?.message || "Error saving entry!",
+        "error"
+      );
     },
   });
 
@@ -103,13 +114,19 @@ const EntryFormDialog = ({
         queryKey: ["single-journal", journalId],
       });
       handleCloseAndClearState();
-      onOpenSnackbar("Successfully modified entry!", "success");
+      snackbarContext.showMessage("Successfully modified entry!");
     },
     onError: (error) => {
       const err: any = error?.response?.data;
-      onOpenSnackbar(err?.message || "Error saving entry!", "error");
+      snackbarContext.showMessage(
+        err?.message || "Error saving entry!",
+        "error"
+      );
     },
   });
+
+  const showTitleError =
+    titleError || ((isLoading || isLoadingEditing) && !titleIsValid);
 
   const handleSubmit = () => {
     if (entry !== null) {
@@ -155,9 +172,10 @@ const EntryFormDialog = ({
         {entry ? "Edit Entry" : "Create a New Entry"}
       </DialogTitle>
       <DialogContent>
-        <Box sx={{ width: "100%", height: "500px", marginTop: 4 }}>
+        <Box sx={{ width: "100%", height: "550px", marginTop: 4 }}>
           <TextField
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={titleChangeHandler}
+            onBlur={titleBlurHandler}
             fullWidth
             label="Entry Title"
             variant="outlined"
@@ -167,6 +185,7 @@ const EntryFormDialog = ({
             sx={{ marginBottom: "0.5rem" }}
             value={title}
           />
+          {showTitleError && <Alert severity="error">Title is required!</Alert>}
           <ReactQuill
             placeholder="Share your thoughts..."
             theme="snow"
@@ -175,13 +194,21 @@ const EntryFormDialog = ({
             formats={formats}
             onChange={setBody}
             style={{ height: "350px" }}
+            onBlur={() => setBodyIsTouched(true)}
           />
+          {!entryContent(body) && bodyIsTouched && (
+            <Alert sx={{ marginTop: 5 }} severity="error">
+              Entry body is required!
+            </Alert>
+          )}
         </Box>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleCloseAndClearState}>Cancel</Button>
         <Button
-          disabled={!body || !title || !entryContent(body) || isLoading}
+          disabled={
+            !title || !entryContent(body) || isLoading || isLoadingEditing
+          }
           color="secondary"
           variant="contained"
           onClick={handleSubmit}

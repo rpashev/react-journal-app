@@ -1,22 +1,38 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "../../services/api";
 import Spinner from "../../components/UI/Spinner";
-import { Alert, Box, Button, Snackbar } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  IconButton,
+  Typography,
+} from "@mui/material";
+import { Edit, Delete } from "@material-ui/icons";
 import AddIcon from "@material-ui/icons/Add";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import JournalEntriesTable, {
   Entry,
 } from "../../components/Journal/JournalEntriesTable";
 import JournalEntriesFilter from "../../components/Journal/JournalEntriesFilter";
-import { Fragment, useState } from "react";
+import { useState, useContext } from "react";
 import EntryFormDialog from "../../components/Entry/EntryFormDialog";
 import EntryDetailsDialog from "../../components/Entry/EntryDetailsDialog";
-import EntryConfirmDeleteDialog from "../../components/Entry/EntryConfirmDeleteDialog";
+import JournalFormDialog from "../../components/Journal/JournalFormDialog";
+import ConfirmDialog from "../../components/UI/ConfirmDialog";
+import SnackbarContext from "../../context/snackbar-context";
 export interface DeleteEntryState {
   journalId: string;
   entryId: string;
+}
+
+export interface DeleteJournalState {
+  journalId: string;
 }
 
 const SingleJournal = () => {
@@ -26,39 +42,60 @@ const SingleJournal = () => {
     () => api.getJournal(journalId)
   );
 
+  const navigate = useNavigate();
+  const snackbarContext = useContext(SnackbarContext);
+
   const [searchFilter, setSearchFilter] = useState("");
   const [timeFilter, setTimeFilter] = useState("All Time");
 
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [severitySnackbar, setSeveritySnackbar] = useState("success");
+  const [openDeleteEntryDialog, setOpenDeleteEntryDialog] = useState(false);
+  const [openDeleteJournalDialog, setOpenDeleteJournalDialog] = useState(false);
+  const [openEditJournalDialog, setOpenEditJournalDialog] = useState(false);
 
   const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
   const queryClient = useQueryClient();
 
-  const {
-    isError: isErrorDelete,
-    error: errorDelete,
-    isLoading: isLoadingDelete,
-    mutate,
-  } = useMutation<any, AxiosError, DeleteEntryState>(api.deleteEntry, {
+  const { isLoading: isDeletingEntry, mutate } = useMutation<
+    any,
+    AxiosError,
+    DeleteEntryState
+  >(api.deleteEntry, {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["single-journal", journalId],
       });
-      setOpenDeleteDialog(false);
-      onOpenSnackbar("Successfully deleted entry!", "success");
+      setOpenDeleteEntryDialog(false);
+      snackbarContext.showMessage("Succesfully deleted entry!");
     },
     onError: () => {
       const err: any = error?.response?.data;
-      onOpenSnackbar(err?.message || "Error deleting entry!", "error");
+      snackbarContext.showMessage(
+        err?.message || "Error deleting entry!",
+        "error"
+      );
     },
   });
+  const { isLoading: isDeletingJournal, mutate: mutateDeleteJournal } =
+    useMutation<any, AxiosError, DeleteJournalState>(api.deleteJournal, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["journals"],
+        });
+        setOpenDeleteJournalDialog(false);
+        navigate("/journals");
+        snackbarContext.showMessage("Succesfully deleted journal!");
+      },
+      onError: () => {
+        const err: any = error?.response?.data;
+        snackbarContext.showMessage(
+          err?.message || "Error deleting journal!",
+          "error"
+        );
+      },
+    });
 
   if (isLoading) {
     return (
@@ -100,32 +137,50 @@ const SingleJournal = () => {
     setSelectedEntry(null);
   };
 
-  const onOpenDeleteDialog = () => {
-    setOpenDeleteDialog(true);
+  const onOpenDeleteEntryDialog = () => {
+    setOpenDeleteEntryDialog(true);
   };
 
-  const handleCloseDeleteDialog = () => {
-    setOpenDeleteDialog(false);
+  const onOpenDeleteJournalDialog = () => {
+    setOpenDeleteJournalDialog(true);
   };
 
-  const onOpenSnackbar = (message: string, severity = "success") => {
-    setSnackbarMessage(message);
-    setSeveritySnackbar(severity);
-    setOpenSnackbar(true);
+  const handleCloseDeleteEntryDialog = () => {
+    setOpenDeleteEntryDialog(false);
+  };
+  const handleCloseDeleteJournalDialog = () => {
+    setOpenDeleteJournalDialog(false);
   };
 
-  const handleCloseSnackbar = () => {
-    setOpenSnackbar(false);
-    setSnackbarMessage("");
+  const onOpenEditJournalDialog = () => {
+    setOpenEditJournalDialog(true);
   };
 
-  const handleDelete = () => {
+  const handleCloseEditJournalDialog = () => {
+    setOpenEditJournalDialog(false);
+  };
+
+  const handleDeleteEntry = () => {
     const data = { journalId, entryId: selectedEntry?._id };
     mutate(data as any);
   };
 
+  const handleDeleteJournal = () => {
+    const data = { journalId };
+    mutateDeleteJournal(data as any);
+  };
+
   return (
-    <Fragment>
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "start",
+        justifyContent: "center",
+        gap: "4rem",
+        flexWrap: "wrap",
+        paddingBlock: 5,
+      }}
+    >
       <Box
         sx={{
           display: "flex",
@@ -133,7 +188,6 @@ const SingleJournal = () => {
           alignItems: "start",
           maxWidth: "95%",
           width: 950,
-          margin: "3rem auto",
           gap: "0.5rem",
         }}
       >
@@ -180,23 +234,47 @@ const SingleJournal = () => {
           timeFilter={timeFilter}
           onOpenDetailsDialog={onOpenDetailsDialog}
           onOpenEditDialog={onOpenEditDialog}
-          onOpenDeleteDialog={onOpenDeleteDialog}
+          onOpenDeleteDialog={onOpenDeleteEntryDialog}
           setSelectedEntry={setSelectedEntry}
         />
       </Box>
+      <Card sx={{ width: "350px", maxWidth: "95%" }}>
+        <CardContent sx={{ paddingBottom: 0 }}>
+          <Typography variant="h5" marginBottom={2}>
+            {data?.data?.journalName}
+          </Typography>
+          <Typography variant="body2">{data?.data?.description}</Typography>
+        </CardContent>
+        <CardActions sx={{ display: "flex", justifyContent: "end" }}>
+          <IconButton
+            aria-label="edit"
+            size="large"
+            sx={{ width: "50px", height: "50px" }}
+            onClick={onOpenEditJournalDialog}
+          >
+            <Edit />
+          </IconButton>
+          <IconButton
+            aria-label="delete"
+            size="large"
+            sx={{ width: "50px", height: "50px" }}
+            onClick={onOpenDeleteJournalDialog}
+          >
+            <Delete />
+          </IconButton>
+        </CardActions>
+      </Card>
       <EntryFormDialog
         open={openAddDialog}
         handleClose={handleCloseAddDialog}
         entry={null}
         journalId={journalId!}
-        onOpenSnackbar={onOpenSnackbar}
       />
       <EntryFormDialog
         open={openEditDialog}
         handleClose={handleCloseEditDialog}
         entry={selectedEntry}
         journalId={journalId!}
-        onOpenSnackbar={onOpenSnackbar}
       />
       <EntryDetailsDialog
         open={openDetailsDialog}
@@ -204,27 +282,30 @@ const SingleJournal = () => {
         entry={selectedEntry!}
         journalId={journalId!}
       />
-      <EntryConfirmDeleteDialog
-        open={openDeleteDialog}
-        handleClose={handleCloseDeleteDialog}
-        handleDeleteEntry={handleDelete}
-        isDeleting={isLoadingDelete}
+
+      <ConfirmDialog
+        open={openDeleteEntryDialog}
+        handleClose={handleCloseDeleteEntryDialog}
+        handleDelete={handleDeleteEntry}
+        isDeleting={isDeletingEntry}
+        title="Delete entry"
+        prompt="Are you sure you want to delete this entry?"
       />
-      <Snackbar
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        open={openSnackbar}
-        onClose={handleCloseSnackbar}
-        autoHideDuration={4000}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={severitySnackbar as any}
-          sx={{ width: "100%" }}
-        >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
-    </Fragment>
+      <ConfirmDialog
+        open={openDeleteJournalDialog}
+        handleClose={handleCloseDeleteJournalDialog}
+        handleDelete={handleDeleteJournal}
+        isDeleting={isDeletingJournal}
+        title="Delete journal"
+        prompt="Are you sure you want to delete this journal?"
+      />
+      <JournalFormDialog
+        open={openEditJournalDialog}
+        handleClose={handleCloseEditJournalDialog}
+        journal={data?.data}
+        journalId={journalId}
+      />
+    </Box>
   );
 };
 

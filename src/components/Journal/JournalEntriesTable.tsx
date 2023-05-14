@@ -121,7 +121,7 @@ const JournalEntriesTable = ({
     <Fragment>
       <TableContainer component={Paper}>
         <Table
-          sx={{ minWidth: 350, maxWidth: "100%" }}
+          sx={{ minWidth: 300, maxWidth: "100%" }}
           aria-label="simple table"
           size="small"
         >
@@ -170,8 +170,23 @@ const JournalEntriesTable = ({
                 }}
               >
                 <TableCell align="left" component="th" scope="row">
-                  <Typography variant="h6">{e.title}</Typography>
-                  <Typography variant="caption">
+                  <Typography
+                    variant="h6"
+                    overflow="hidden"
+                    textOverflow="ellipsis"
+                    maxWidth="400px"
+                    whiteSpace="nowrap"
+                  >
+                    {e.title}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    display="inline-block"
+                    overflow="hidden"
+                    textOverflow="ellipsis"
+                    maxWidth="300px"
+                    whiteSpace="nowrap"
+                  >
                     {entryContent(e.body)}
                   </Typography>
                 </TableCell>

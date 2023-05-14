@@ -5,7 +5,10 @@ import {
   EntryEditInputState,
   EntryInputState,
 } from "../components/Entry/EntryFormDialog";
-import { DeleteEntryState } from "../pages/SingleJournal/SingleJournal";
+import {
+  DeleteEntryState,
+  DeleteJournalState,
+} from "../pages/SingleJournal/SingleJournal";
 import {
   JournalEditInputState,
   JournalInputState,
@@ -36,11 +39,16 @@ export default {
   },
 
   updateJournal(data: JournalEditInputState) {
-    return axiosAuth.patch(`/${data.journalId}`, data);
+    console.log(data.journalId);
+    const payload = {
+      journalName: data.journalName,
+      description: data.description,
+    };
+    return axiosAuth.patch(`/${data.journalId}`, payload);
   },
 
-  deleteJournal(id: string) {
-    return axiosAuth.delete(`/${id}`);
+  deleteJournal(data: DeleteJournalState) {
+    return axiosAuth.delete(`/${data.journalId}`);
   },
 
   getJournals() {

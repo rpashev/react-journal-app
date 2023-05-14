@@ -40,7 +40,15 @@ export const JournalEntriesTableEntryCard = ({
       >
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           <Typography variant="h6">Entry</Typography>
-          <Typography variant="body1">{entry.title}</Typography>
+          <Typography
+            variant="body1"
+            maxWidth="200px"
+            textOverflow="ellipsis"
+            overflow="hidden"
+            whiteSpace="nowrap"
+          >
+            {entry.title}
+          </Typography>
         </Box>
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           <Typography variant="h6">Date</Typography>

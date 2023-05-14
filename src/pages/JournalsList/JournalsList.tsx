@@ -29,7 +29,9 @@ const JournalsList = () => {
     let err: any = error?.response?.data;
 
     content = (
-      <Alert severity="error">{err.message || "Could not load journals"}</Alert>
+      <Alert severity="error">
+        {err?.message || "Could not load journals"}
+      </Alert>
     );
   }
 
@@ -39,7 +41,6 @@ const JournalsList = () => {
 
   if (journals.length > 0) {
     content = journals.map((journal: BasicJournal) => {
-      // console.log(journal);
       return <JournalCard journal={journal} key={journal.id} />;
     });
   }

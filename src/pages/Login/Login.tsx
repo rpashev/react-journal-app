@@ -9,10 +9,13 @@ import {
 import { Container } from "@mui/system";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import Spinner from "../../components/UI/Spinner";
 import AuthContext from "../../context/user-context";
 import api from "../../services/api";
+import { validateEmail } from "../../utils/validations";
+import useInput from "../../hooks/use-input";
+import SnackbarContext from "../../context/snackbar-context";
 
 export interface LoginInputState {
   email: string;
@@ -20,10 +23,23 @@ export interface LoginInputState {
 }
 
 const Login = () => {
-  const [inputs, setInputs] = useState<LoginInputState>({
-    email: "",
-    password: "",
-  });
+  const snackbarContext = useContext(SnackbarContext);
+
+  const {
+    value: email,
+    hasError: emailError,
+    isValid: emailIsValid,
+    valueChangeHandler: emailChangeHandler,
+    inputBlurHandler: emailBlurHandler,
+  } = useInput(validateEmail);
+
+  const {
+    value: password,
+    hasError: passwordError,
+    isValid: passwordIsValid,
+    valueChangeHandler: passwordChangeHandler,
+    inputBlurHandler: passwordBlurHandler,
+  } = useInput((value) => (value.length < 6 ? false : true));
 
   const context = useContext(AuthContext);
 
@@ -34,8 +50,12 @@ const Login = () => {
   >(api.login, {
     onSuccess: (res) => {
       context.login(res.data.token, res.data.userId);
+      snackbarContext.showMessage("You logged in successfully!");
     },
   });
+
+  const showEmailError = emailError || (isLoading && !emailIsValid);
+  const showPasswordError = passwordError || (isLoading && !passwordIsValid);
 
   let errorContent: any;
   if (isError && error) {
@@ -45,17 +65,7 @@ const Login = () => {
 
   const submitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (inputs.email && inputs.password) {
-      mutate(inputs);
-      console.log(inputs);
-    }
-  };
-
-  const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputs({
-      ...inputs,
-      [event.target.name]: event.target.value,
-    });
+    mutate({ email, password });
   };
 
   return (
@@ -75,7 +85,8 @@ const Login = () => {
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <TextField
-              onChange={changeHandler}
+              onChange={emailChangeHandler}
+              onBlur={emailBlurHandler}
               fullWidth
               label="Email"
               variant="outlined"
@@ -84,10 +95,14 @@ const Login = () => {
               required
               type="email"
             />
+            {showEmailError && (
+              <Alert severity="error">Please enter a valid email!</Alert>
+            )}
           </Grid>
           <Grid item xs={12}>
             <TextField
-              onChange={changeHandler}
+              onChange={passwordChangeHandler}
+              onBlur={passwordBlurHandler}
               fullWidth
               type="password"
               label="Password"
@@ -96,6 +111,11 @@ const Login = () => {
               name="password"
               required
             />
+            {showPasswordError && (
+              <Alert severity="error">
+                Password should be at least 6 symbols!
+              </Alert>
+            )}
           </Grid>
           {!isLoading && (
             <Grid item xs={12} md={5}>
@@ -104,7 +124,7 @@ const Login = () => {
                 type="submit"
                 variant="contained"
                 color="secondary"
-                disabled={!inputs.email || !inputs.password}
+                disabled={!emailIsValid || !passwordIsValid}
               >
                 Login
               </Button>

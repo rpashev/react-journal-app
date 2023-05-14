@@ -77,7 +77,26 @@ const EntryDetailsDialog = ({ entry, journalId, open, handleClose }: Props) => {
         )}
 
         <DialogContent
-          sx={{ fontSize: "20px", minHeight: "500px", marginTop: 4 }}
+          sx={{
+            fontSize: "20px",
+            overflowY: "auto",
+            height: "600px",
+            marginTop: 4,
+            overflow: "auto",
+            scrollbarWidth: "thin",
+            "&::-webkit-scrollbar": {
+              width: "0.4em",
+            },
+            "&::-webkit-scrollbar-track": {
+              background: "#f1f1f1",
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "#9c27b0",
+            },
+            "&::-webkit-scrollbar-thumb:hover": {
+              background: "#555",
+            },
+          }}
           dangerouslySetInnerHTML={{ __html: entry?.body }}
         ></DialogContent>
       </Fragment>

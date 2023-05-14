@@ -13,6 +13,7 @@ import Register from "./pages/Register/Register";
 import SingleEntry from "./pages/SingleEntry/SingleEntry";
 import SingleJournal from "./pages/SingleJournal/SingleJournal";
 import React from "react";
+import SnackbarMessage from "./components/UI/SnackbarMessage";
 
 function App() {
   const context = useContext(AuthContext);
@@ -54,6 +55,7 @@ function App() {
         />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
+      <SnackbarMessage />
     </BrowserRouter>
   );
 }
