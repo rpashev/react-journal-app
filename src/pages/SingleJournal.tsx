@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import api from "../../services/api";
-import Spinner from "../../components/UI/Spinner";
+import api from "../services/api";
+import Spinner from "../components/UI/Spinner";
 import {
   Alert,
   Box,
@@ -18,14 +18,15 @@ import AddIcon from "@material-ui/icons/Add";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import JournalEntriesTable, {
   Entry,
-} from "../../components/Journal/JournalEntriesTable";
-import JournalEntriesFilter from "../../components/Journal/JournalEntriesFilter";
+} from "../components/Journal/JournalEntriesTable";
+import JournalEntriesFilter from "../components/Journal/JournalEntriesFilter";
 import { useState, useContext } from "react";
-import EntryFormDialog from "../../components/Entry/EntryFormDialog";
-import EntryDetailsDialog from "../../components/Entry/EntryDetailsDialog";
-import JournalFormDialog from "../../components/Journal/JournalFormDialog";
-import ConfirmDialog from "../../components/UI/ConfirmDialog";
-import SnackbarContext from "../../context/snackbar-context";
+import EntryFormDialog from "../components/Entry/EntryFormDialog";
+import EntryDetailsDialog from "../components/Entry/EntryDetailsDialog";
+import JournalFormDialog from "../components/Journal/JournalFormDialog";
+import ConfirmDialog from "../components/UI/ConfirmDialog";
+import SnackbarContext from "../context/snackbar-context";
+
 export interface DeleteEntryState {
   journalId: string;
   entryId: string;
@@ -78,6 +79,7 @@ const SingleJournal = () => {
       );
     },
   });
+
   const { isLoading: isDeletingJournal, mutate: mutateDeleteJournal } =
     useMutation<any, AxiosError, DeleteJournalState>(api.deleteJournal, {
       onSuccess: () => {
@@ -280,7 +282,6 @@ const SingleJournal = () => {
         open={openDetailsDialog}
         handleClose={handleCloseDetailsDialog}
         entry={selectedEntry!}
-        journalId={journalId!}
       />
 
       <ConfirmDialog

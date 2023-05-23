@@ -29,7 +29,6 @@ const JournalEntriesFilter = ({
     "This Week",
     "This Month",
     "This Year",
-    "Custom",
   ];
 
   return (

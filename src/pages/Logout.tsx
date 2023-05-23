@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import AuthContext from "../../context/user-context";
-import SnackbarContext from "../../context/snackbar-context";
+import AuthContext from "../context/user-context";
+import SnackbarContext from "../context/snackbar-context";
 
 const Logout = () => {
   const snackbarContext = useContext(SnackbarContext);

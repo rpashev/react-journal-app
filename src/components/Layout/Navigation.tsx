@@ -66,8 +66,8 @@ export default function Navigation(props: Props) {
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
-        MUI
+      <Typography color="secondary" variant="h6" sx={{ my: 2 }}>
+        JOURNAL APP
       </Typography>
       <Divider />
       <List>
@@ -101,16 +101,24 @@ export default function Navigation(props: Props) {
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
+            sx={{
+              mr: 2,
+              display: { sm: "none", xs: "flex" },
+              justifyContent: "start",
+            }}
           >
-            <MenuIcon />
+            <MenuIcon fontSize="large" />
           </IconButton>
           <Typography
             variant="h6"
             component="div"
-            sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+            sx={{
+              flexGrow: 1,
+              display: { xs: "none", sm: "block" },
+              cursor: "default",
+            }}
           >
-            Journal App
+            JOURNAL APP
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
             {navLinks.map((item) => (

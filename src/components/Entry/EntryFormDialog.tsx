@@ -70,45 +70,37 @@ const EntryFormDialog = ({ open, handleClose, entry, journalId }: Props) => {
   };
 
   useEffect(() => {
-    console.log(body);
-  }, [body]);
-
-  useEffect(() => {
     if (entry) {
       setTitle(entry.title);
       setBody(entry.body);
     }
-
-    console.log(body);
   }, [entry]);
 
-  const { isError, error, isLoading, mutate } = useMutation<
+  const { isLoading, mutate } = useMutation<any, AxiosError, EntryInputState>(
+    api.createEntry,
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["single-journal", journalId],
+        });
+        handleCloseAndClearState();
+        snackbarContext.showMessage("Successfully added entry!");
+      },
+      onError: (error) => {
+        const err: any = error?.response?.data;
+        snackbarContext.showMessage(
+          err?.message || "Error saving entry!",
+          "error"
+        );
+      },
+    }
+  );
+
+  const { isLoading: isLoadingEditing, mutate: mutateEdit } = useMutation<
     any,
     AxiosError,
-    EntryInputState
-  >(api.createEntry, {
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["single-journal", journalId],
-      });
-      handleCloseAndClearState();
-      snackbarContext.showMessage("Successfully added entry!");
-    },
-    onError: (error) => {
-      const err: any = error?.response?.data;
-      snackbarContext.showMessage(
-        err?.message || "Error saving entry!",
-        "error"
-      );
-    },
-  });
-
-  const {
-    isError: isErrorEditing,
-    error: errorEditing,
-    isLoading: isLoadingEditing,
-    mutate: mutateEdit,
-  } = useMutation<any, AxiosError, EntryEditInputState>(api.editEntry, {
+    EntryEditInputState
+  >(api.editEntry, {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["single-journal", journalId],

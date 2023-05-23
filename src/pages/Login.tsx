@@ -1,21 +1,14 @@
-import {
-  Button,
-  Grid,
-  TextField,
-  Typography,
-  CircularProgress,
-  Alert,
-} from "@mui/material";
+import { Button, Grid, TextField, Typography, Alert } from "@mui/material";
 import { Container } from "@mui/system";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useContext } from "react";
-import Spinner from "../../components/UI/Spinner";
-import AuthContext from "../../context/user-context";
-import api from "../../services/api";
-import { validateEmail } from "../../utils/validations";
-import useInput from "../../hooks/use-input";
-import SnackbarContext from "../../context/snackbar-context";
+import Spinner from "../components/UI/Spinner";
+import AuthContext from "../context/user-context";
+import api from "../services/api";
+import { validateEmail } from "../utils/validations";
+import useInput from "../hooks/use-input";
+import SnackbarContext from "../context/snackbar-context";
 
 export interface LoginInputState {
   email: string;

@@ -1,14 +1,11 @@
-import axios, { AxiosResponse } from "axios";
-import { LoginInputState } from "../pages/Login/Login";
+import axios from "axios";
+import { LoginInputState } from "../pages/Login";
 import axiosAuth from "./axios";
 import {
   EntryEditInputState,
   EntryInputState,
 } from "../components/Entry/EntryFormDialog";
-import {
-  DeleteEntryState,
-  DeleteJournalState,
-} from "../pages/SingleJournal/SingleJournal";
+import { DeleteEntryState, DeleteJournalState } from "../pages/SingleJournal";
 import {
   JournalEditInputState,
   JournalInputState,
@@ -30,7 +27,6 @@ export default {
   },
 
   createJournal(data: JournalInputState) {
-    console.log("hereeeeeeee");
     return axiosAuth.post("create-journal", data);
   },
 
@@ -39,7 +35,6 @@ export default {
   },
 
   updateJournal(data: JournalEditInputState) {
-    console.log(data.journalId);
     const payload = {
       journalName: data.journalName,
       description: data.description,

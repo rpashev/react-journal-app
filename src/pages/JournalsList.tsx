@@ -3,11 +3,11 @@ import { Box, Container, Typography, Alert, Button } from "@mui/material";
 import AddIcon from "@material-ui/icons/Add";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import JournalCard from "../../components/Journal/JournalCard";
-import Spinner from "../../components/UI/Spinner";
-import api from "../../services/api";
+import JournalCard from "../components/Journal/JournalCard";
+import Spinner from "../components/UI/Spinner";
+import api from "../services/api";
 import React, { useState } from "react";
-import JournalFormDialog from "../../components/Journal/JournalFormDialog";
+import JournalFormDialog from "../components/Journal/JournalFormDialog";
 
 export interface BasicJournal {
   entriesAmount: number;
@@ -67,9 +67,9 @@ const JournalsList = () => {
           variant="h4"
           component="h2"
           color="secondary"
-          sx={{ textAlign: "center", marginTop: 3, marginBottom: 2 }}
+          sx={{ textAlign: "center", marginTop: 3, marginBottom: 3 }}
         >
-          Your Journals
+          YOUR JOURNALS
         </Typography>
         <Button
           variant="contained"

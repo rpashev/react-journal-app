@@ -1,13 +1,10 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment } from "react";
 import { Close } from "@material-ui/icons";
 import {
   Dialog,
   IconButton,
   DialogTitle,
   DialogContent,
-  Typography,
-  Box,
-  Alert,
   Button,
   DialogActions,
 } from "@mui/material";
@@ -18,22 +15,10 @@ import { Entry } from "../Journal/JournalEntriesTable";
 interface Props {
   open: boolean;
   entry: Entry;
-  journalId: string;
   handleClose: () => void;
 }
 
-const EntryDetailsDialog = ({ entry, journalId, open, handleClose }: Props) => {
-  const [body, setBody] = useState("");
-  const [title, setTitle] = useState("");
-  const [date, setDate] = useState("");
-
-  const handleCloseAndClearState = () => {
-    handleClose();
-    setBody("");
-    setTitle("");
-    setDate("");
-  };
-
+const EntryDetailsDialog = ({ entry, open, handleClose }: Props) => {
   return (
     <Dialog
       maxWidth="lg"
@@ -48,7 +33,7 @@ const EntryDetailsDialog = ({ entry, journalId, open, handleClose }: Props) => {
       <IconButton
         aria-label="close"
         size="medium"
-        onClick={handleCloseAndClearState}
+        onClick={handleClose}
         sx={{
           position: "absolute",
           right: 8,
@@ -70,6 +55,7 @@ const EntryDetailsDialog = ({ entry, journalId, open, handleClose }: Props) => {
               backgroundColor: "#9c27b0",
               color: "#fff",
               paddingBlock: 1,
+              paddingRight: 5,
             }}
           >
             {entry?.title} from {formatDate(entry?.date)}
@@ -102,7 +88,7 @@ const EntryDetailsDialog = ({ entry, journalId, open, handleClose }: Props) => {
       </Fragment>
 
       <DialogActions>
-        <Button onClick={handleCloseAndClearState}>Cancel</Button>
+        <Button onClick={handleClose}>Cancel</Button>
       </DialogActions>
     </Dialog>
   );

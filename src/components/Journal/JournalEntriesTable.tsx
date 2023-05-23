@@ -59,12 +59,6 @@ const JournalEntriesTable = ({
   const [filteredRows, setFilteredRows] = useState(entries);
 
   useEffect(() => {
-    console.log(entries);
-  }, [entries]);
-
-  useEffect(() => {
-    console.log(searchFilter);
-
     setFilteredRows(
       entries.filter((e) => {
         if (

@@ -1,21 +1,14 @@
-import {
-  Button,
-  Grid,
-  TextField,
-  Typography,
-  CircularProgress,
-  Alert,
-} from "@mui/material";
+import { Button, Grid, TextField, Typography, Alert } from "@mui/material";
 import { Container } from "@mui/system";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useContext, useState } from "react";
-import Spinner from "../../components/UI/Spinner";
-import AuthContext from "../../context/user-context";
-import api from "../../services/api";
-import useInput from "../../hooks/use-input";
-import { validateEmail } from "../../utils/validations";
-import SnackbarContext from "../../context/snackbar-context";
+import Spinner from "../components/UI/Spinner";
+import SnackbarContext from "../context/snackbar-context";
+import AuthContext from "../context/user-context";
+import useInput from "../hooks/use-input";
+import api from "../services/api";
+import { validateEmail } from "../utils/validations";
 
 export interface RegisterInputState {
   email: string;
@@ -44,6 +37,7 @@ const Register = () => {
     valueChangeHandler: passwordChangeHandler,
     inputBlurHandler: passwordBlurHandler,
   } = useInput((value) => (value.length < 6 ? false : true));
+
   const {
     value: repeatPassword,
     hasError: repeatPasswordError,
@@ -51,6 +45,7 @@ const Register = () => {
     valueChangeHandler: repeatPasswordChangeHandler,
     inputBlurHandler: repeatPasswordBlurHandler,
   } = useInput((value) => (value.length < 6 ? false : true));
+
   const {
     value: firstName,
     hasError: firstNameError,
@@ -58,6 +53,7 @@ const Register = () => {
     valueChangeHandler: firstNameChangeHandler,
     inputBlurHandler: firstNameBlurHandler,
   } = useInput((value) => value.length > 0);
+
   const {
     value: lastName,
     hasError: lastNameError,
@@ -211,7 +207,7 @@ const Register = () => {
                 color="secondary"
                 disabled={!formIsValid}
               >
-                Login
+                Register
               </Button>
             </Grid>
           )}

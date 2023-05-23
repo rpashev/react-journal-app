@@ -16,7 +16,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import api from "../../services/api";
 import React, { useEffect, useContext } from "react";
-import { BasicJournal } from "../../pages/JournalsList/JournalsList";
+import { BasicJournal } from "../../pages/JournalsList";
 import SnackbarContext from "../../context/snackbar-context";
 import useInput from "../../hooks/use-input";
 interface Props {
@@ -103,10 +103,8 @@ const JournalFormDialog = ({
         queryKey: ["single-journal", journalId],
       });
       snackbarContext.showMessage("Successfully modified journal!");
-      console.log("from success");
     },
     onError: (error) => {
-      console.log("from error");
       const err: any = error?.response?.data;
       snackbarContext.showMessage(
         err?.message || "Error saving journal!",
@@ -122,8 +120,6 @@ const JournalFormDialog = ({
     descriptionError ||
     ((isLoading || isLoadingEditing) && !descriptionIsValid);
 
-  const formIsValid = journalNameIsValid && descriptionIsValid;
-
   const handleCloseAndResetState = () => {
     if (journal) {
       setJournalName(journal.journalName);
@@ -138,13 +134,10 @@ const JournalFormDialog = ({
   const handleSubmit = (e: any) => {
     e.preventDefault();
 
-    console.log("from submit");
     if (journal && journalId) {
-      console.log("from edit");
       const data = { journalName, description, journalId };
       mutateEdit(data);
     } else {
-      console.log("from create");
       const data = { journalName, description };
       mutate(data);
     }
