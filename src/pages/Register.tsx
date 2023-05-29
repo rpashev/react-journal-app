@@ -2,7 +2,7 @@ import { Button, Grid, TextField, Typography, Alert } from "@mui/material";
 import { Container } from "@mui/system";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import Spinner from "../components/UI/Spinner";
 import SnackbarContext from "../context/snackbar-context";
 import AuthContext from "../context/user-context";
@@ -67,7 +67,7 @@ const Register = () => {
     lastNameIsValid &&
     passwordIsValid &&
     emailIsValid &&
-    password == repeatPassword;
+    password === repeatPassword;
 
   const { isError, error, isLoading, mutate } = useMutation<
     any,
