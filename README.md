@@ -1,6 +1,9 @@
 # Journal App 
 A responsive single page application allowing registered users to create and use personal journals. Registered users can peform all CRUD operations when it comes to their journals and the journal entries within them. This app is built with the MERN stack - Mongo/Express/React/Node. Second version of an application initially done with [Vue](https://github.com/rpashev/vue-journal-app/#readme)
 
+Here you can find the **[REST API](https://github.com/rpashev/journal-app-REST)** that I have built for the app.    
+> Live demo **[HERE](https://my-journal-app-react.netlify.app/)**
+
 ## Table of Contents
 * [General Info](#general-information)
 * [Challenges](#challenges)
