@@ -1,46 +1,101 @@
-# Getting Started with Create React App
+# Journal App 
+A responsive single page application allowing registered users to create and use personal journals. Registered users can peform all CRUD operations when it comes to their journals and the journal entries within them. This app is built with the MERN stack - Mongo/Express/React/Node. Second version of an application initially done with [Vue](https://github.com/rpashev/vue-journal-app/#readme)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Table of Contents
+* [General Info](#general-information)
+* [Challenges](#challenges)
+* [Technologies Used](#technologies-used)
+* [Features](#features)
+* [Setup](#setup)
+* [Room for Improvement](#room-for-improvement)
+* [Contact](#contact)
 
-## Available Scripts
 
-In the project directory, you can run:
+## General Information
+Journaling is an interest of mine so I was very keen on creating an app that I am passionate about while improving my web development skills. CRUD operations are essential for most web applications and I had a great opportunity to practice implementing these features in this single page application. It was an amazing learning experience to work on connecting the React front end with the Express/Mongo [Backend](https://github.com/rpashev/rest-movie-apps) and making every feature work with error handling. Especially interesting was to consume the same [REST api](https://github.com/rpashev/rest-movie-apps) as in the previous [Vue version](https://github.com/rpashev/vue-journal-app/#readme) but this time using React for the frontend.
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Challenges
+- previously having worked with TypeScript mostly in the context of Angular, it took a while to get used to using TS with React
+- going around some of Material UI's limitations was difficult at times
+- first time I've used react-query so it was a challenging but also very interesting experience
+- react-quill's configuration took a while
+- coming up with a design and making the journal entries table responsive was challenging
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
 
-### `npm test`
+## Technologies Used  
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Front End
+- React 18.2.0
+- React Router 6.10.0
+- TypeScript
+- Material UI
+- Context API
+- React-Query
+- React-Quill
+- Axios
+  
+ ### Back End
+ - Node
+ - Express 
+ - MongoDB
+ - Mongo Atlas
+ - Mongoose
+ - JWT
+ - Axios
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Features
+### Anonymous users are able to:
+- register
+- login
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Authenticated users are able to:
+- create multiple journals
+- edit a journal's name and description
+- delete a journal
+- view their journals
+- view a single journal with its entries
+- create a journal entry with a text editor
+- edit a journal entry
+- delete a journal entry
+- view a journal entry
+- filter entries by date
+- filter for the amount of entries showing on a page
+- search entries by title/content
+- logout
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
+## Setup
+### To get a local copy up and running follow these simple steps:
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+1. Make sure you have **`node`** and **`npm`** installed globally on your machine.  
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+2. Clone the repo  
+    ### `git clone https://github.com/rpashev/react-journal-app.git`  
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+3. Install NPM packages  
+    ### `npm install`    
+  
+4. Run the app in development mode with hot reloading  
+    ### `npm start`  
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+5. You can view the app on [http://localhost:3000](http://localhost:3000)  
+ 
+6. To build for production run the following command  
+    ### `npm run build`
+    
+7. If you want to connect to the backend follow the instructions [here](https://github.com/rpashev/journal-app-REST/#readme)
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Room for Improvement
+- implement an "Auto Logout" functionality on JWT expiration
+- implement custom filter by date for the journal entries
+- refactor some of the more repetitive code on the front end by implementing hooks when appropriate
+- break up some of the larger components
+- implement a backend pagination for the journal entries
+- implement a feature that allows users to add images to their entries
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+
+## Contact
+Created by rpashev - feel free to [contact me](https://www.rpashev.com/).
